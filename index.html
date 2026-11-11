@@ -31,7 +31,9 @@ header .eyebrow{font-family:var(--font-mono);letter-spacing:.22em;font-size:13px
 header h1{margin:6px 0 0;font-size:32px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
 header .sub{color:var(--muted);margin-top:4px;max-width:980px}
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
-.panel-holder{perspective:1800px}
+.panel-holder{perspective:1800px;min-width:0}
+.stage>*,.panel>*,.grid2>*{min-width:0}
+.chart-scroll{max-width:100%}
 .panel{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px;
   box-shadow:0 30px 80px rgba(0,0,0,.45);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
 .tilt .panel{transform:rotateY(14deg) rotateX(3deg) scale(.96);transform-origin:left center}
@@ -45,6 +47,7 @@ header .sub{color:var(--muted);margin-top:4px;max-width:980px}
 .lam .seg button{padding:5px 10px;text-align:center}
 .btn.primary{background:#1d4fd8;border-color:#3b6cf0}
 .scrub{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.scrub #stepPlay{justify-self:start;text-align:center;min-width:40px}
 .scrub .now{font-family:var(--font-mono);font-size:20px;font-weight:600;min-width:92px;font-variant-numeric:tabular-nums}
 .scrub input[type=range]{width:100%;accent-color:var(--ui)}
 .scrub .phase{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -113,9 +116,10 @@ ul.cond li b{color:var(--ink);font-weight:600}
 .layers .k i{width:9px;height:9px;border-radius:2px;display:inline-block}
 .layers .v{font-family:var(--font-mono);font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
 .subtitle{text-align:center;font-size:22px;font-weight:600;letter-spacing:-.01em;padding:6px 12px 2px;min-height:40px;text-wrap:balance;transition:opacity .35s}
+.swipe{display:none;font-size:11.5px;color:var(--ui);margin-bottom:4px}
 .foot{color:var(--muted);font-size:11.5px;text-align:center;text-wrap:balance}
 @media (max-width:1100px){.stage{grid-template-columns:1fr}.tilt .panel{transform:none}}
-@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.wrap{padding:18px 14px}header h1{font-size:25px}.subtitle{font-size:17px}.scrub{grid-template-columns:auto 1fr}.scrub .phase{grid-column:1/-1}}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.wrap{padding:18px 14px}header h1{font-size:25px}.subtitle{font-size:17px}.scrub{grid-template-columns:auto 1fr}.scrub input[type=range]{grid-column:1/-1}.scrub .phase{grid-column:1/-1;white-space:normal}.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-scroll #chart{min-width:720px}.swipe{display:block}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -147,7 +151,8 @@ ul.cond li b{color:var(--ink);font-weight:600}
         <div class="card" id="chartCard">
           <h3>월별 하루 방문 수요 · 생활 바닥과 이벤트 피크</h3>
           <div class="cap">2026.11 평상시 하루 = 100 기준 지수 · 선 = 마켓 없는 날, 점 = 정기 마켓 날(월 1회), 음영 = 지하도상가 팝업 운영 기간</div>
-          <svg id="chart" viewBox="0 0 780 420" width="100%" role="img" aria-label="2026년 11월부터 2031년 12월까지 월별 수요 지수와 기수별 일정"></svg>
+          <div class="swipe">← 차트를 좌우로 밀어 보세요 · 누르면 그 달로 이동 →</div>
+          <div class="chart-scroll"><svg id="chart" viewBox="0 0 780 420" width="100%" role="img" aria-label="2026년 11월부터 2031년 12월까지 월별 수요 지수와 기수별 일정"></svg></div>
           <div class="tip" id="tip"></div>
           <div class="legend">
             <span><i style="background:var(--life)"></i>생활 바닥(마켓 없는 날)</span>
@@ -341,7 +346,7 @@ function render(){
   const kp=[
     {c:"var(--life)",k:"생활 바닥 · 마켓 없는 날", v:fmt(I(p.dayN)), d:cur===0?"기준값":`현재 대비 <b>${I(p.dayN)>=100?"+":""}${fmt(I(p.dayN)-100)}</b>`},
     {c:"var(--event)",k:"이벤트 피크 · 정기 마켓 날", v:p.st.market?fmt(I(p.dayM)):"—", d:p.st.market?`바닥 대비 <b>+${fmt((p.dayM/p.dayN-1)*100)}%</b>`:"정기 마켓 개시 전"},
-    {c:"var(--life)",k:"골목 정식 점포(누적, 생존 반영)", v:fmt(p.st.formal,0)+"곳", d:p.st.popup?`지하도상가 팝업 <b>${p.st.popup}팀</b> 운영 중`:"팝업 쉬는 기간"},
+    {c:"var(--life)",k:"골목 정식 점포(누적, 생존 반영)", v:fmt(p.st.formal,0)+"곳", d:p.st.popup?`지하도상가 팝업 <b>${p.st.popup}팀</b> 운영 중`:(cohorts()[0]&&cur<cohorts()[0].pp?`팝업존 개시 전(${ym(cohorts()[0].pp).s})`:"팝업 쉬는 기간")},
     {c:"var(--plan)",k:"예정 수요 포착률", v:p.capNew!=null?fmt(p.capNew*100,1)+"%":"—", d:p.capNew!=null?`정책 없음 ${fmt(b.capNew*100,1)}% 대비 <b>+${fmt((p.capNew-b.capNew)*100,1)}%p</b>`:"예정 수요 유입 전"}
   ];
   $("kpis").innerHTML=kp.map(x=>`<div class="kpi" style="--c:${x.c}"><div class="k">${x.k}</div><div class="v">${x.v}</div><div class="d">${x.d}</div></div>`).join("");
