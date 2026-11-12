@@ -11,10 +11,11 @@
 :root{
   --bg:#060c19; --panel:#0c1730; --panel-2:#11203f; --card:#0a1427; --line:#22365c;
   --ink:#e7eef9; --muted:#8ea2c3; --faint:#5d7096;
-  --ui:#4fd6ea;                 /* UI 강조(버튼·테두리) */
-  --life:#1e9fb4;               /* 생활 바닥(기존 주민 상시) */
-  --plan:#8479ee;               /* 예정 수요 */
-  --event:#bd8429;              /* 이벤트(마켓·팝업) */
+  --ui:#4fd6ea;
+  --life:#1e9fb4;               /* 상시(생활) */
+  --plan:#8479ee;               /* 1·2차 유입 */
+  --popup:#c98f2e;              /* 팝업 운영일 추가분 */
+  --event:#f0b44c;              /* 플리마켓 날 추가분 */
   --ghost:#6b7fa6;
   --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -29,7 +30,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;
 .wrap{position:relative;max-width:1460px;margin:0 auto;padding:26px 30px 22px;display:grid;gap:16px}
 header .eyebrow{font-family:var(--font-mono);letter-spacing:.22em;font-size:13px;color:var(--ui)}
 header h1{margin:6px 0 0;font-size:32px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
-header .sub{color:var(--muted);margin-top:4px;max-width:980px}
+header .sub{color:var(--muted);margin-top:4px;max-width:1040px}
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
 .panel-holder{perspective:1800px;min-width:0}
 .stage>*,.panel>*,.grid2>*{min-width:0}
@@ -42,10 +43,25 @@ header .sub{color:var(--muted);margin-top:4px;max-width:980px}
 .seg button,.btn{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;line-height:1.25;text-align:left}
 .seg button small{display:block;color:var(--muted);font-size:11px}
 .seg button[aria-pressed="true"],.btn[aria-pressed="true"]{border-color:var(--ui);background:rgba(79,214,234,.12);box-shadow:inset 0 0 0 1px var(--ui)}
-.seg button:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--ui);outline-offset:2px}
+.seg button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ui);outline-offset:2px}
 .lam{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
 .lam .seg button{padding:5px 10px;text-align:center}
 .btn.primary{background:#1d4fd8;border-color:#3b6cf0}
+.ctl{display:grid;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:rgba(10,20,39,.6)}
+.ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl-k{font-size:12px;color:var(--muted);min-width:64px}
+.ctl .seg button{padding:5px 10px;font-size:12.5px}
+.ctl .seg button[aria-pressed="false"]{color:var(--faint);text-decoration:line-through;text-decoration-color:rgba(142,162,195,.5)}
+.ctl .btn{padding:5px 10px;font-size:12.5px}
+.chip-stage{font-family:var(--font-mono);font-size:11px;color:#b3abff;margin-right:4px}
+#map.picking{cursor:crosshair;outline:2px dashed var(--plan);outline-offset:-2px;border-radius:8px}
+.pick-note{font-size:12px;color:#b3abff;margin:6px 0 0;min-height:1em}
+td input.t{width:150px;font-family:var(--font-body)}
+td input.s{width:58px}
+td input.m{width:78px}
+td input:disabled{opacity:.35}
+td .btn{padding:3px 8px;font-size:12px}
+.del{color:#ffb4b4}
 .scrub{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center}
 .scrub #stepPlay{justify-self:start;text-align:center;min-width:40px}
 .scrub .now{font-family:var(--font-mono);font-size:20px;font-weight:600;min-width:92px;font-variant-numeric:tabular-nums}
@@ -53,9 +69,10 @@ header .sub{color:var(--muted);margin-top:4px;max-width:980px}
 .scrub .phase{font-size:12px;color:var(--muted);white-space:nowrap}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
-.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,transparent)}
+.kpi .bar-c{position:absolute;left:0;right:0;top:0;height:3px;background:var(--c,transparent)}
 .kpi .k{font-size:12px;color:var(--muted)}
 .kpi .v{font-family:var(--font-mono);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .v small{font-size:13px;color:var(--muted);font-weight:500}
 .kpi .d{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .kpi .d b{color:var(--ink);font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;position:relative}
@@ -67,7 +84,7 @@ svg text{font-family:var(--font-body)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .legend label{cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .tip{position:absolute;pointer-events:none;background:#0d1b36;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;
-  box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;transition:opacity .12s;min-width:170px;z-index:5}
+  box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;transition:opacity .12s;min-width:190px;z-index:5}
 .tip b{font-family:var(--font-mono);font-weight:600}
 .tip .r{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}
 .tip .r span:last-child{color:var(--ink);font-family:var(--font-mono);font-variant-numeric:tabular-nums}
@@ -79,22 +96,24 @@ svg text{font-family:var(--font-body)}
 .comp-row.ctrl .nm{color:var(--muted)}
 .comp-track{height:14px;background:#0d1a33;border-radius:3px;display:flex;gap:2px;overflow:hidden}
 .comp-track span{height:100%;transition:width .5s cubic-bezier(.2,.7,.2,1)}
-.comp-track span:last-child{border-radius:0 4px 4px 0}
 .comp-row .tot{font-family:var(--font-mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
 details.inputs{border-top:1px dashed var(--line);padding-top:10px}
 details.inputs summary{cursor:pointer;color:var(--muted);font-size:12.5px}
+details.inputs .note{font-size:11.5px;color:var(--muted);margin:6px 0 0}
 .warn{display:inline-block;font-size:11px;color:#1b1200;background:#f3b14e;border-radius:4px;padding:1px 6px;margin-left:6px;font-weight:600}
 .tbl-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
 th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;white-space:nowrap}
 th{color:var(--muted);font-weight:500}
-td.num{font-family:var(--font-mono);text-align:right;font-variant-numeric:tabular-nums}
+td.n,th.n{font-family:var(--font-mono);text-align:right;font-variant-numeric:tabular-nums}
 td input{width:96px;font:inherit;font-family:var(--font-mono);color:var(--ink);background:#08111f;border:1px solid var(--line);border-radius:5px;padding:3px 6px}
 td input[type=month]{width:132px}
+td select{font:inherit;color:var(--ink);background:#08111f;border:1px solid var(--line);border-radius:5px;padding:3px 6px}
 tr.grp td{color:var(--ui);font-weight:600;padding-top:10px;border-bottom:none}
 .src{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
 .src.real{color:#7fe3f1;border-color:rgba(79,214,234,.5)}
 .src.plan{color:#b3abff;border-color:rgba(132,121,238,.6)}
+.src.est{color:#9fd5a8;border-color:rgba(120,200,140,.5)}
 .src.assume{color:#f3c27a;border-color:rgba(243,177,78,.5)}
 aside{display:grid;gap:14px}
 .call{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:rgba(12,23,48,.75);transition:border-color .4s,box-shadow .4s}
@@ -110,16 +129,16 @@ aside{display:grid;gap:14px}
 .frac span:last-child{padding:2px 4px 0}
 ul.cond{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:12.5px}
 ul.cond li b{color:var(--ink);font-weight:600}
-.layers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .layers div{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .layers .k{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .layers .k i{width:9px;height:9px;border-radius:2px;display:inline-block}
-.layers .v{font-family:var(--font-mono);font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
+.layers .v{font-family:var(--font-mono);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
 .subtitle{text-align:center;font-size:22px;font-weight:600;letter-spacing:-.01em;padding:6px 12px 2px;min-height:40px;text-wrap:balance;transition:opacity .35s}
 .swipe{display:none;font-size:11.5px;color:var(--ui);margin-bottom:4px}
 .foot{color:var(--muted);font-size:11.5px;text-align:center;text-wrap:balance}
 @media (max-width:1100px){.stage{grid-template-columns:1fr}.tilt .panel{transform:none}}
-@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.wrap{padding:18px 14px}header h1{font-size:25px}.subtitle{font-size:17px}.scrub{grid-template-columns:auto 1fr}.scrub input[type=range]{grid-column:1/-1}.scrub .phase{grid-column:1/-1;white-space:normal}.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-scroll #chart{min-width:720px}.swipe{display:block}}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.wrap{padding:18px 14px}header h1{font-size:25px}.subtitle{font-size:17px}.scrub{grid-template-columns:auto 1fr}.scrub input[type=range]{grid-column:1/-1}.scrub .phase{grid-column:1/-1;white-space:normal}.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-scroll #chart{min-width:760px}.swipe{display:block}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -127,8 +146,8 @@ ul.cond li b{color:var(--ink);font-weight:600}
 <div class="wrap">
   <header>
     <div class="eyebrow">05 · 기대효과 · HUFF SIMULATION</div>
-    <h1>수요 시뮬레이션 — 이벤트로 버티고, 생활로 자리 잡는다</h1>
-    <div class="sub">추진 일정(기수당 약 9개월: 교육 3 → 원데이 클래스·정기 마켓 3 → 지하도상가 팝업 3 → 정식 창업, 연 2기)을 월 단위로 돌려, 주민이 여러 상권 가운데 제물포 구도심을 고를 확률을 허프 모델로 계산합니다.</div>
+    <h1>수요 시뮬레이션 — 이벤트로 먼저 부르고, 생활로 자리 잡는다</h1>
+    <div class="sub">기수당 6개월(교육 3 → 지하도상가 팝업 3), 3개월마다 새 기수가 교육을 시작해 팝업이 끊기지 않습니다. 플리마켓은 매달 1주일 열립니다. 1차 유입(영스퀘어 운영·두산위브 입주)과 2차 유입(북측 공공주택 입주) 전후로 주민이 제물포 구도심을 고르는 확률을 허프 모델로 월마다 계산합니다.</div>
   </header>
 
   <div class="stage">
@@ -139,56 +158,74 @@ ul.cond li b{color:var(--ink);font-weight:600}
           <div class="lam">거리 민감도 λ <div class="seg" role="group" aria-label="거리 민감도" id="lamSeg"></div></div>
         </div>
 
+        <div class="ctl">
+          <div class="ctl-row"><span class="ctl-k">정책 요소</span><div class="seg" id="togSeg" role="group" aria-label="정책 요소 켜기·끄기"></div></div>
+          <div class="ctl-row"><span class="ctl-k">유입 수요</span><div class="seg" id="infSeg" role="group" aria-label="유입 수요 켜기·끄기"></div>
+            <button class="btn" id="addBtn" type="button">+ 수요 추가</button><button class="btn" id="mgrBtn" type="button">목록 편집</button></div>
+        </div>
+
         <div class="scrub">
           <button class="btn" id="stepPlay" type="button" aria-label="월별 재생">▶</button>
           <div class="now" id="nowLbl"></div>
-          <input type="range" id="slider" min="0" max="61" step="1" value="0" aria-label="시점 선택">
+          <input type="range" id="slider" min="0" max="73" step="1" value="0" aria-label="시점 선택">
           <div class="phase" id="phaseLbl"></div>
         </div>
 
         <div class="kpis" id="kpis"></div>
 
         <div class="card" id="chartCard">
-          <h3>월별 하루 방문 수요 · 생활 바닥과 이벤트 피크</h3>
-          <div class="cap">2026.11 평상시 하루 = 100 기준 지수 · 선 = 마켓 없는 날, 점 = 정기 마켓 날(월 1회), 음영 = 지하도상가 팝업 운영 기간</div>
+          <h3>월별 제물포 선택수요 지수 · 상시 수요선과 이벤트 추가분</h3>
+          <div class="cap">2026.11 상시(평상시) 하루 = 100 · 선 = 상시 영업 점포와 생활 수요만 반영 · 주황 구간 = 팝업 운영일 추가분(3개월, 가운데 달 피크) · 점 = 플리마켓 주간(매달 7일)</div>
           <div class="swipe">← 차트를 좌우로 밀어 보세요 · 누르면 그 달로 이동 →</div>
-          <div class="chart-scroll"><svg id="chart" viewBox="0 0 780 420" width="100%" role="img" aria-label="2026년 11월부터 2031년 12월까지 월별 수요 지수와 기수별 일정"></svg></div>
+          <div class="chart-scroll"><svg id="chart" viewBox="0 0 780 420" width="100%" role="img" aria-label="2026년 11월부터 2032년 12월까지 월별 선택수요 지수와 기수별 일정"></svg></div>
           <div class="tip" id="tip"></div>
           <div class="legend">
-            <span><i style="background:var(--life)"></i>생활 바닥(마켓 없는 날)</span>
-            <span><i style="background:var(--event);border-radius:50%"></i>이벤트 피크(정기 마켓 날)</span>
-            <span><i style="background:var(--event);opacity:.3"></i>팝업 운영 기간</span>
-            <label><input type="checkbox" id="b0Chk" checked> <i style="background:transparent;border:1px dashed var(--ghost)"></i>B0 정책 없음(대조군)</label>
-            <span style="margin-left:auto">기수 막대: <i style="background:#3a4f78"></i>교육 <i style="background:var(--event);opacity:.55"></i>원데이·마켓 <i style="background:var(--event)"></i>팝업 <i style="background:var(--life)"></i>정식 창업</span>
+            <span><i style="background:var(--life)"></i>상시 수요선</span>
+            <span><i style="background:var(--popup);opacity:.6"></i>팝업 운영일 추가분</span>
+            <span><i style="background:var(--event);border-radius:50%"></i>플리마켓 주간</span>
+            <label><input type="checkbox" id="b0Chk" checked> <i style="background:transparent;border:1px dashed var(--ghost)"></i>정책 없음(같은 1·2차 유입 적용)</label>
+            <span style="margin-left:auto">기수 막대: <i style="background:#3a4f78"></i>교육 <i style="background:var(--popup)"></i>팝업 · 진한 막대 = 초기 4개 기수</span>
           </div>
         </div>
 
         <div class="grid2">
           <div class="card">
-            <h3>월 수요 구성 · 두 레이어가 함께 두꺼워지는 과정</h3>
-            <div class="cap">2026.11 월 수요 = 100. 생활 바닥(기존 주민 + 예정 수요) 위에 마켓 날 추가분이 얹힘. 마켓은 월 1회라 월 총량에선 작고, 역할은 '갈 이유'를 알리는 첫 방문 계기</div>
+            <h3>월 선택수요 구성 · 주요 시점 비교</h3>
+            <div class="cap">2026.11 월 총량 = 100. 상시(기존 주민 + 1·2차 유입) 위에 팝업 운영일·플리마켓 주간 추가분을 실제 적용일 수로 가중해 얹음</div>
             <div id="comp"></div>
             <div class="legend">
               <span><i style="background:var(--life)"></i>기존 주민 상시</span>
-              <span><i style="background:var(--plan)"></i>예정 수요 상시</span>
-              <span><i style="background:var(--event)"></i>마켓 날 추가</span>
+              <span><i style="background:var(--plan)"></i>1·2차 유입 상시</span>
+              <span><i style="background:var(--popup)"></i>팝업 추가</span>
+              <span><i style="background:var(--event)"></i>플리마켓 추가</span>
             </div>
           </div>
           <div class="card">
             <h3>상권 지도와 제물포로 향하는 수요</h3>
-            <div class="cap">네모 = 상권(크기 ∝ 매력도), 원 = 주민 구역(크기 ∝ 인구), 선 굵기 = 제물포 선택 수요(평상시)</div>
-            <svg id="map" viewBox="0 0 420 330" width="100%" role="img" aria-label="상권과 주민 구역 지도"></svg>
+            <div class="cap">네모 = 상권(크기 ∝ 매력도), 원 = 출발지(크기 ∝ 인구), 선 굵기 = 제물포 선택수요(상시). 좌표는 근사</div>
+            <svg id="map" viewBox="0 0 420 330" width="100%" role="img" aria-label="상권과 출발지 지도"></svg>
+            <p class="pick-note" id="pickNote"></p>
           </div>
         </div>
 
-        <details class="inputs">
-          <summary>입력값 보기·수정 <span class="warn">가정값 포함 · 실데이터 교체 전</span></summary>
-          <div class="tbl-wrap"><table id="inTbl"></table></div>
-          <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="resetBtn" type="button">기본값 복원</button></div>
+        <details class="inputs" id="mgr">
+          <summary>유입 수요 관리 · 추가·수정·삭제 <span class="warn">이 브라우저에만 저장</span></summary>
+          <p class="note">수요를 추가하거나 끄면 국면 띠, 표시선, 검산 경계월, 단계별 직전·직후 비교, 포착률이 모두 다시 계산됩니다. 허프 거리 계산에 위치가 필요하니 '지도에서 찍기'로 출발지를 지정하세요. 분석 기간(2032.12) 밖의 시작월은 반영되지 않습니다. 상업시설(점포 환산)은 그 시설이 제물포 매력도 S에 더하는 값입니다(예: 영스퀘어 10, 가정).</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)">가구당 인원 <input id="hhInp" type="number" min="0" step="any" style="width:70px;font:inherit;font-family:var(--font-mono);color:var(--ink);background:#08111f;border:1px solid var(--line);border-radius:5px;padding:3px 6px"> <span class="src est">추정</span> 인천 아파트 평균 2.5명(2024)</div>
+          <div class="tbl-wrap"><table id="mgrTbl"></table></div>
+          <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="addBtn2" type="button">+ 수요 추가</button><button class="btn" id="resetBtn2" type="button">기본값 복원</button></div>
+        </details>
+
+        <details class="inputs" open>
+          <summary>검산 경계월 · 1·2차 유입 전후 비교</summary>
+          <div class="tbl-wrap"><table id="chkTbl"></table></div>
+          <div class="tbl-wrap"><table id="cmpTbl"></table></div>
+          <p class="note">상시 = 평상시 하루, 팝업일 = 팝업만 운영하는 날, 마켓일 = 팝업과 플리마켓이 함께 열리는 날(팝업 없는 달은 플리마켓만). 월 총량은 상시 × 30일 + 팝업 추가분 × 팝업 운영일 + 플리마켓 추가분 × 개최일. 모든 값은 같은 계산 결과에서 가져옵니다.</p>
         </details>
         <details class="inputs">
-          <summary>수치 표로 보기 (6개월 간격)</summary>
-          <div class="tbl-wrap"><table id="dataTbl"></table></div>
+          <summary>입력값 보기·수정 <span class="warn">가정값 포함</span></summary>
+          <div class="tbl-wrap"><table id="inTbl"></table></div>
+          <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="resetBtn" type="button">기본값 복원</button></div>
         </details>
       </div>
     </div>
@@ -205,15 +242,16 @@ ul.cond li b{color:var(--ink);font-weight:600}
           <span>P<sub>ij</sub> =</span>
           <span class="frac"><span>S<sub>j</sub> / D<sub>ij</sub><sup>λ</sup></span><span>Σ<sub>k</sub> S<sub>k</sub> / D<sub>ik</sub><sup>λ</sup></span></span>
         </div>
-        <p>S = 상권 매력도(음식점·카페·팝업·부스 수), D = 주민 구역에서 상권까지 거리(km)</p>
+        <p>허프 원식은 S = 판매면적, T = 이동시간입니다. 이 모델은 S 대신 <b style="color:var(--ink)">점포·팝업·부스 수</b>를, T 대신 출발지에서 상권까지 <b style="color:var(--ink)">직선거리 D(km)</b>를 씁니다. 출발지 값이 통행량이 아니라 인구라서 결과는 '선택수요 지수'입니다.</p>
         <div class="big" id="c2v"></div>
         <p id="c2t" style="margin-top:2px"></p>
       </div>
       <div class="call" id="c3">
-        <div class="hd"><div class="num">3</div><h2>두 레이어</h2></div>
+        <div class="hd"><div class="num">3</div><h2>상시와 이벤트</h2></div>
         <div class="layers">
-          <div><div class="k"><i style="background:var(--life)"></i>생활 바닥</div><div class="v" id="c3a"></div></div>
-          <div><div class="k"><i style="background:var(--event);border-radius:50%"></i>이벤트 피크</div><div class="v" id="c3b"></div></div>
+          <div><div class="k"><i style="background:var(--life)"></i>상시</div><div class="v" id="c3a"></div></div>
+          <div><div class="k"><i style="background:var(--popup)"></i>팝업일</div><div class="v" id="c3b"></div></div>
+          <div><div class="k"><i style="background:var(--event);border-radius:50%"></i>마켓일</div><div class="v" id="c3c"></div></div>
         </div>
         <p id="c3t"></p>
       </div>
@@ -225,10 +263,10 @@ ul.cond li b{color:var(--ink);font-weight:600}
   </div>
 
   <div class="subtitle" id="subtitle"></div>
-  <div class="foot">추정 시뮬레이션이며 실측이 아닙니다. 점포 수는 인허가(2025 연말, 반경 500m) 실측, 기존 주민 구역 인구·좌표·이용 빈도·팀 수 일부는 가정값입니다. 외부 방문객(관광)은 모델에 없어 이벤트 효과는 보수적으로 잡혔고, 생존율은 1년치만 반영해 2년 이후 점포 수는 과대일 수 있습니다. 매입 상가 수용 한도는 반영하지 않았습니다.</div>
+  <div class="foot">추정 시뮬레이션이며 실측이 아닙니다. 점포 수는 인허가(2025 연말, 반경 500m) 실측이고, 기존 주민 구역 인구·좌표, 이용 빈도, 영스퀘어 인원·운영 시작월, 공공주택 입주 시작월, 팝업 가중치, 부스 수는 가정값입니다. 가구당 2.5명은 추정값이고, 순증 비율 1.0은 기존 주민 재입주를 빼지 않은 상한입니다. 외부 방문객(관광)은 모델에 없어 이벤트 효과는 보수적이며, 생존율은 개업 1년 후 1회만 반영해 2년 이후 점포 수는 과대일 수 있습니다. 상관관계 기반 추정으로 인과를 뜻하지 않습니다.</div>
 </div>
 
-<script>
+<script id="model">
 /* ===== 입력값: 실데이터가 확보되면 이 블록만 교체 ===== */
 const DEFAULT = {
   centers: [
@@ -242,56 +280,91 @@ const DEFAULT = {
     {id:"o2", name:"숭의동 일대", lat:37.4630, lng:126.6500, pop:20000, src:"assume", note:"주민등록 인구로 교체"},
     {id:"o3", name:"용현동 일대", lat:37.4520, lng:126.6560, pop:40000, src:"assume", note:"주민등록 인구로 교체"},
     {id:"o4", name:"주안동 일대", lat:37.4630, lng:126.6760, pop:50000, src:"assume", note:"주민등록 인구로 교체"},
-    {id:"pm", name:"파크메종",    lat:37.4647, lng:126.6545, pop:1840,  src:"plan",   note:"736세대 × 2.5명 · 입주 2026.07(미검증) · 좌표 근사"}
+    {id:"pm", name:"파크메종",    lat:37.4647, lng:126.6545, pop:1840,  src:"est",    note:"736세대 × 2.5명(추정) · 입주 2026.07(미검증) · 좌표 근사"}
   ],
-  newOrigins: [
-    {id:"dw", name:"두산위브 도화",   lat:37.4748, lng:126.6676, pop:1650, arrive:"2028-11", src:"plan",   note:"660세대 × 2.5명 · 입주 2028.11 예정(보도) · 좌표 근사"},
-    {id:"n2", name:"영스퀘어 종사자", lat:37.4662, lng:126.6584, pop:1000, arrive:"2028-12", src:"assume", note:"완공 2028(확인됨) · 월·종사자 규모 가정"},
-    {id:"n1", name:"공공주택",       lat:37.4692, lng:126.6596, pop:8743, arrive:"2031-01", src:"plan",   note:"3,497세대(2024.12 승인) × 2.5명 · 2031 입주 목표, 월 가정"}
+  /* 생활 수요 유입: kind people = 인원 직접 입력, house = 세대 × 가구당 인원 × 입주율 × 순증 비율
+     stores = 이 시설이 제물포 매력도 S에 더하는 점포 환산값(시작월부터) */
+  inflows: [
+    {id:"ysq", on:true, stage:1, name:"영스퀘어 종사자·이용자", lat:37.4662, lng:126.6584, kind:"people", people:1000, units:0, occ:1, net:1, arrive:"2028-12", ramp:0, stores:10, src:"assume",
+      note:"준공 2028 목표(보도) · 운영 시작월·인원·상업시설 10은 가정"},
+    {id:"dw",  on:true, stage:1, name:"두산위브 더센트럴 도화", lat:37.4748, lng:126.6676, kind:"house", people:0, units:660, occ:1, net:1, arrive:"2028-11", ramp:0, stores:0, src:"plan",
+      note:"660세대 · 2028.11 입주 예정(분양 보도) · 좌표 근사"},
+    {id:"ph",  on:true, stage:2, name:"북측 공공주택", lat:37.4692, lng:126.6596, kind:"house", people:0, units:3497, occ:1, net:1, arrive:"2031-12", ramp:0, stores:0, src:"assume",
+      note:"3,497세대(2024.12 승인) · 2031 준공·입주 목표, 입주 시작월은 가정"}
   ],
-  station: {name:"제물포역 · 팝업존/광장", lat:37.4669, lng:126.6568},
+  hh: 2.5,
+  on: {popup:1, market:1, formal:1, stores:1},
+  station: {name:"지하도상가 팝업존", lat:37.4669, lng:126.6568},
+  flea:    {name:"플리마켓(캠퍼스 담장길)", lat:37.4702, lng:126.6566},
   prog: {
-    firstEdu:"2027-03", cadence:6, teams:10, popupTeams:10, formalTeams:5, survival:0.641,
-    marketStart:"2027-06", marketDays:1, boothsBase:20, boothsExp:40, expMonth:"2028-06",
-    ysqStores:10, ysqMonth:"2028-12"
+    firstEdu:"2027-03", cadence:3, initN:4, cont:1,
+    teams:10, popupTeams:10, formalTeams:3,
+    delay:0, noOpen:0, survival:0.641, cap:0,
+    w1:0.6, w2:1.0, w3:0.6, popupDays:30,
+    marketStart:"2027-06", marketDays:7, boothsBase:20, boothsExp:40, expMonth:"2028-06"
   },
-  progSrc: {firstEdu:"plan", cadence:"plan", teams:"plan", popupTeams:"assume", formalTeams:"assume", survival:"real",
-    marketStart:"plan", marketDays:"plan", boothsBase:"assume", boothsExp:"assume", expMonth:"assume", ysqStores:"assume", ysqMonth:"assume"},
+  progSrc: {firstEdu:"plan", cadence:"plan", initN:"plan", cont:"plan", teams:"plan", popupTeams:"plan", formalTeams:"plan",
+    delay:"assume", noOpen:"assume", survival:"real", cap:"assume", w1:"assume", w2:"assume", w3:"assume", popupDays:"assume",
+    marketStart:"plan", marketDays:"plan", boothsBase:"assume", boothsExp:"assume", expMonth:"assume"},
   trips: 8, minDist: 0.3
 };
-const N = 62;                       // 2026.11 ~ 2031.12
-const PH = 3;                       // 교육·원데이/마켓·팝업 각 3개월(추진 일정)
+const N = 74;                       // 2026.11 ~ 2032.12
+const EDU = 3, POP = 3;             // 교육 3개월, 팝업 3개월
 const LAMS = [1.5, 2, 2.5];
-let cfg = structuredClone(DEFAULT), lam = 2, cur = 0, showB0 = true, R = null;
+let cfg = structuredClone(DEFAULT), lam = 2;
 
-const $ = id => document.getElementById(id);
-const fmt = (x,d=0) => (+x).toLocaleString("ko-KR",{maximumFractionDigits:d,minimumFractionDigits:d});
-const idxOf = s => { const [y,m]=s.split("-").map(Number); return (y-2026)*12 + (m-11); };
+const idxOf = s => { const [y,m]=String(s).split("-").map(Number); return (y-2026)*12 + (m-11); };
 const ym = i => { const y=2026+Math.floor((10+i)/12), m=((10+i)%12)+1; return {y,m,s:`${y}.${String(m).padStart(2,"0")}`}; };
 function hav(a,b){const R=6371,r=Math.PI/180;const dl=(b.lat-a.lat)*r,dg=(b.lng-a.lng)*r;
   const s=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+const activeInflows = () => cfg.inflows.filter(o=>o.on);
+const shortName = o => o.name.split(" ")[0];
 
-/* ===== 기수 일정 ===== */
+/* ===== 기수 일정: 교육 3 → 팝업 3 → 정식 창업 연계, cadence개월마다 새 기수 ===== */
 function cohorts(){
-  const s0=idxOf(cfg.prog.firstEdu), cad=Math.max(1,cfg.prog.cadence|0), out=[];
-  for(let i=0; s0+i*cad<=N-1; i++){const s=s0+i*cad; out.push({k:i+1,s,mk:s+PH,pp:s+2*PH,f:s+3*PH});}
+  const p=cfg.prog, s0=idxOf(p.firstEdu), cad=Math.max(1,p.cadence|0), out=[];
+  for(let i=0;;i++){
+    if(!+p.cont && i>=p.initN) break;
+    const s=s0+i*cad; if(s>N-1) break;
+    out.push({k:i+1, s, pp:s+EDU, f:s+EDU+POP, init:i<p.initN});
+  }
   return out;
 }
-function phaseOf(c,m){ if(m<c.s) return null; if(m<c.mk) return "교육"; if(m<c.pp) return "원데이·마켓"; if(m<c.f) return "팝업"; return "정식"; }
-
-/* 월별 상태: 제물포 매력도(평상시/마켓일)와 활성 출발지 */
+function phaseOf(c,m){ if(m<c.s) return null; if(m<c.pp) return "교육"; if(m<c.f) return "팝업"; return "연계"; }
+function popupW(m){
+  const p=cfg.prog, W=[p.w1,p.w2,p.w3]; let w=0; const act=[];
+  for(const c of cohorts()){ if(m>=c.pp && m<c.f){ w+=W[m-c.pp]; act.push({k:c.k,pos:m-c.pp+1}); } }
+  return {w,act};
+}
+function formalAt(m){
+  const p=cfg.prog; let target=0, open=0;
+  for(const c of cohorts()){
+    if(m>=c.f) target+=p.formalTeams;
+    const o=c.f+(p.delay|0);
+    if(m>=o){ const n=p.formalTeams*(1-p.noOpen); open+= n*(m-o>=12 ? p.survival : 1); }
+  }
+  if(p.cap>0) open=Math.min(open,p.cap);
+  return {target,open};
+}
+function fullPop(o){ return o.kind==="people" ? +o.people : o.units*cfg.hh*o.occ*o.net; }
+function popOf(o,m){
+  const a=idxOf(o.arrive); if(m<a) return 0;
+  const r=o.ramp|0, f=r<=0?1:Math.min(1,(m-a+1)/r);
+  return fullPop(o)*f;
+}
+/* 월별 상태: 제물포 매력도 3단계(상시/팝업일/마켓일)와 활성 출발지 */
 function state(m, policy){
-  const p=cfg.prog, base=cfg.centers.find(c=>c.id==="jm").S, C=cohorts();
-  const ysq = m>=idxOf(p.ysqMonth) ? p.ysqStores : 0;
-  const orig=[...cfg.origins, ...cfg.newOrigins.filter(o=>m>=idxOf(o.arrive))];
-  if(!policy) return {sN:base+ysq, sM:base+ysq, market:false, orig, popup:0, formal:0, booths:0, mk:0, ysq};
-  const popup = C.some(c=>m>=c.pp&&m<c.f) ? p.popupTeams : 0;
-  const mk = C.some(c=>m>=c.mk&&m<c.pp) ? p.teams : 0;
-  const formal = C.reduce((a,c)=> a + (m>=c.f ? p.formalTeams*(m-c.f>=12 ? p.survival : 1) : 0), 0);
-  const market = m>=idxOf(p.marketStart);
+  const p=cfg.prog, T=cfg.on, base=cfg.centers.find(c=>c.id==="jm").S, act=activeInflows();
+  const facS = T.stores ? act.reduce((a,o)=>a+(m>=idxOf(o.arrive)?(+o.stores||0):0),0) : 0;
+  const orig=[...cfg.origins.map(o=>({o,pop:o.pop,isNew:false})),
+              ...act.map(o=>({o,pop:popOf(o,m),isNew:true,stage:o.stage})).filter(x=>x.pop>0)];
+  if(!policy) return {sB:base+facS, sP:base+facS, sM:base+facS, orig, pw:0, act:[], popS:0, target:0, open:0, market:false, booths:0, facS};
+  const pu = T.popup ? popupW(m) : {w:0,act:[]}, popS=p.popupTeams*pu.w;
+  const fo = T.formal ? formalAt(m) : {target:0,open:0};
+  const market = !!T.market && m>=idxOf(p.marketStart);
   const booths = market ? (m>=idxOf(p.expMonth) ? p.boothsExp : p.boothsBase) : 0;
-  const sN = base+popup+formal+ysq;
-  return {sN, sM: market ? sN+booths+mk : sN, market, orig, popup, formal, booths, mk, ysq};
+  const sB = base+fo.open+facS, sP = sB+popS, sM = sP+booths;
+  return {sB, sP, sM, orig, pw:pu.w, act:pu.act, popS, target:fo.target, open:fo.open, market, booths, facS};
 }
 function probJm(o,sJm,L){
   let num=0,den=0;
@@ -299,156 +372,200 @@ function probJm(o,sJm,L){
   return num/den;
 }
 function runMonth(m, policy, L){
-  const st=state(m,policy), per=cfg.trips/30, isNew=o=>cfg.newOrigins.includes(o);
-  let oldN=0,newN=0,allM=0,oldPop=0,oldP=0,newPop=0,newCap=0; const flows=[];
-  for(const o of st.orig){
-    const pN=probJm(o,st.sN,L), pM=probJm(o,st.sM,L), dN=o.pop*per*pN;
-    if(isNew(o)){newN+=dN;newPop+=o.pop;newCap+=o.pop*pN}else{oldN+=dN;oldPop+=o.pop;oldP+=o.pop*pN}
-    allM+=o.pop*per*pM; flows.push({o,d:dN});
+  const st=state(m,policy), per=cfg.trips/30, p=cfg.prog;
+  let dB=0,dP=0,dM=0,oldB=0,newB=0,oldPop=0,oldPr=0; const capA={}; const flows=[];
+  for(const x of st.orig){
+    const pB=probJm(x.o,st.sB,L), pP=st.sP===st.sB?pB:probJm(x.o,st.sP,L), pM=st.sM===st.sP?pP:probJm(x.o,st.sM,L), w=x.pop*per;
+    dB+=w*pB; dP+=w*pP; dM+=w*pM;
+    if(x.isNew){ newB+=w*pB; const c=capA[x.stage]||(capA[x.stage]=[0,0]); c[0]+=x.pop*pB; c[1]+=x.pop; } else { oldB+=w*pB; oldPop+=x.pop; oldPr+=x.pop*pB; }
+    flows.push({o:x.o,d:w*pB,isNew:x.isNew});
   }
-  const dayN=oldN+newN, dayM=st.market?allM:dayN, md=st.market?cfg.prog.marketDays:0;
-  return {m,st,dayN,dayM,oldMonth:oldN*30,newMonth:newN*30,eventMonth:(dayM-dayN)*md,
-    month:dayN*30+(dayM-dayN)*md, pOld:oldP/oldPop, pOldM:st.market?null:null, capNew:newPop?newCap/newPop:null, flows};
+  const cap={}; for(const k in capA) cap[k]=capA[k][0]/capA[k][1];
+  const popDays = st.pw>0 ? p.popupDays : 0, mkDays = st.market ? p.marketDays : 0;
+  const popupMonth=(dP-dB)*popDays, eventMonth=(dM-dP)*mkDays;
+  return {m, st, dB, dP, dM, oldMonth:oldB*30, newMonth:newB*30, popupMonth, eventMonth,
+    month:dB*30+popupMonth+eventMonth, pOld:oldPr/oldPop, cap, flows};
 }
 function computeAll(){
   const P=[],B=[]; for(let m=0;m<N;m++){P.push(runMonth(m,true,lam));B.push(runMonth(m,false,lam));}
-  const base=P[0].dayN, baseM=P[0].month;
+  const base=P[0].dB, baseM=P[0].month;
   return {P,B,I:v=>v/base*100,MI:v=>v/baseM*100};
 }
-
-/* 국면 */
+/* 단계: 켜진 유입을 단계 번호로 묶고 시작월 순으로 정렬 */
+function stageInfo(){
+  const g={};
+  for(const o of activeInflows()){const a=idxOf(o.arrive); if(a>N-1) continue;
+    const s=g[o.stage]||(g[o.stage]={k:o.stage,a,z:a,names:[]}); s.a=Math.min(s.a,a); s.z=Math.max(s.z,a); s.names.push(shortName(o));}
+  return Object.values(g).sort((x,y)=>x.a-y.a||x.k-y.k);
+}
 function phases(){
-  const arr=[...new Set(cfg.newOrigins.map(o=>idxOf(o.arrive)))].sort((a,b)=>a-b);
-  const first=arr[0]??N, last=arr[arr.length-1]??N, mk=idxOf(cfg.prog.marketStart), f1=cohorts()[0]?.f??N;
-  return {mk,f1,first,last};
+  const C=cohorts(), init=C.filter(c=>c.init), S=stageInfo();
+  return {s0:C[0]?C[0].s:N, initEnd:init.length?init[init.length-1].f-1:-1, S, a1:S[0]?S[0].a:N};
 }
 function phaseName(m){
   const ph=phases();
-  if(m<ph.mk) return {id:"pre",lbl:"정책 시행 전"};
-  if(m<ph.first) return {id:"gap",lbl:"갭 기간 · 이벤트가 수요를 끈다"};
-  if(m<ph.last) return {id:"w1",lbl:"1차 예정 수요 유입"};
-  return {id:"co",lbl:"공존 · 생활 + 이벤트"};
+  if(m>=ph.a1){ let s=ph.S[0]; for(const x of ph.S) if(m>=x.a) s=x;
+    return {id:"st",k:s.k,first:s===ph.S[0],last:s===ph.S[ph.S.length-1],names:s.names,lbl:`${s.k}차 유입`}; }
+  if(m<ph.s0) return {id:"pre",lbl:"준비"};
+  if(m<=ph.initEnd) return {id:"init",lbl:"초기 4개 기수 운영"};
+  return {id:"wait",lbl:"지속 운영 · 유입 전"};
 }
-const MILES=[{m:0,l:"현재"},{m:11,l:"1기 팝업"},{m:23,l:"갭 기간 끝"},{m:37,l:"1차 유입 1년"},{m:61,l:"공존"}];
+function phaseBands(){
+  const ph=phases(), b=[], lim=Math.min(ph.a1,N);
+  b.push([0,Math.min(ph.s0,lim)-1,"준비"]);
+  b.push([ph.s0,Math.min(ph.initEnd,lim-1),"초기 4개 기수 운영"]);
+  b.push([Math.max(ph.initEnd+1,ph.s0),lim-1,"지속 운영"]);
+  ph.S.forEach((s,i)=>b.push([s.a,(ph.S[i+1]?ph.S[i+1].a:N)-1,`${s.k}차 유입`]));
+  return b.filter(x=>x[1]>=x[0]);
+}
+function miles(){
+  const C=cohorts(), ph=phases(), L=[{m:0,l:"현재"}];
+  if(C[0]) L.push({m:C[0].pp,l:"1기 팝업"});
+  if(ph.initEnd>=0) L.push({m:ph.initEnd,l:"초기 4기 종료"});
+  for(const s of ph.S) L.push({m:s.a-1,l:`${s.k}차 직전`},{m:s.z,l:`${s.k}차 직후`});
+  L.push({m:N-1,l:"끝"});
+  const seen=new Set(); return L.filter(x=>x.m>=0&&x.m<=N-1&&!seen.has(x.m)&&seen.add(x.m)).sort((a,b)=>a.m-b.m);
+}
+function checkMonths(){
+  const C=cohorts(), ph=phases(), out=[];
+  const c=k=>C.find(x=>x.k===k);
+  if(c(1)) out.push({m:c(1).pp,l:"1기 팝업·2기 교육 시작"});
+  if(c(2)) out.push({m:c(2).f,l:"2기 연계·3기 팝업·4기 교육 시작"});
+  if(ph.initEnd>=0) out.push({m:ph.initEnd,l:"초기 4기 팝업 종료"});
+  if(c(4)) out.push({m:c(4).f,l:"4기 연계 시작"});
+  for(const o of activeInflows()) out.push({m:idxOf(o.arrive),l:`${o.stage}차 · ${o.name} 유입`});
+  return out.filter(x=>x.m>=0&&x.m<N).sort((a,b)=>a.m-b.m);
+}
+</script>
+
+<script>
+let cur=0, showB0=true, R=null, pickIdx=null, MAPT=null;
+const $ = id => document.getElementById(id);
+const fmt = (x,d=0) => (+x).toLocaleString("ko-KR",{maximumFractionDigits:d,minimumFractionDigits:d});
+const sgn = v => (v>=0?"+":"")+fmt(v);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ===== 브라우저 저장 ===== */
+const STORE="jm-huff-cfg", VER="v3-2026-11-12";
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify({v:VER,cfg})); }catch(e){} }
+function load(){ try{ const x=JSON.parse(localStorage.getItem(STORE)||"null"); if(x&&x.v===VER&&x.cfg) cfg=x.cfg; }catch(e){} }
+function resetAll(){ cfg=structuredClone(DEFAULT); try{ localStorage.removeItem(STORE); }catch(e){} pickIdx=null; renderInputs(); renderMgr(); recompute(); }
 
 /* ===== 렌더 ===== */
+const TOG=[["popup","팝업"],["market","플리마켓"],["formal","정식 점포"],["stores","시설 상업시설"]];
 function renderSeg(){
-  $("jumpSeg").innerHTML=MILES.map(x=>`<button type="button" data-m="${x.m}" aria-pressed="${x.m===cur}">${x.l}<small>${ym(x.m).s}</small></button>`).join("");
+  $("jumpSeg").innerHTML=miles().map(x=>`<button type="button" data-m="${x.m}" aria-pressed="${x.m===cur}">${x.l}<small>${ym(x.m).s}</small></button>`).join("");
   $("lamSeg").innerHTML=LAMS.map(l=>`<button type="button" data-l="${l}" aria-pressed="${l===lam}">${l.toFixed(1)}</button>`).join("");
 }
-function recompute(){ R=computeAll(); renderStatic(); render(); }
-function renderStatic(){ drawChart(); drawComp(); drawTable(); }
+function renderCtl(){
+  $("togSeg").innerHTML=TOG.map(([k,l])=>`<button type="button" data-t="${k}" aria-pressed="${!!cfg.on[k]}">${l}</button>`).join("");
+  $("infSeg").innerHTML=cfg.inflows.map((o,i)=>`<button type="button" data-i="${i}" aria-pressed="${!!o.on}"><span class="chip-stage">${o.stage}차</span>${esc(shortName(o))} <small style="display:inline;color:var(--muted)">${ym(idxOf(o.arrive)).s}</small></button>`).join("")||`<span style="color:var(--muted);font-size:12px">없음</span>`;
+}
+function recompute(){ R=computeAll(); renderCtl(); renderStatic(); render(); save(); }
+function renderStatic(){ drawChart(); drawComp(); drawTables(); }
+function actText(m){
+  return cohorts().map(c=>{const f=phaseOf(c,m); if(!f||f==="연계") return null;
+    return f==="팝업" ? `${c.k}기 팝업 ${m-c.pp+1}/3` : `${c.k}기 교육`;}).filter(Boolean);
+}
 function render(){
   renderSeg();
-  const {P,B,I}=R, p=P[cur], b=B[cur], ph=phaseName(cur);
+  const {P,B,I}=R, p=P[cur], b=B[cur], ph=phaseName(cur), pg=cfg.prog;
   $("slider").value=cur; $("nowLbl").textContent=ym(cur).s; $("phaseLbl").textContent=ph.lbl;
 
+  const S=phases().S.filter(s=>p.cap[s.k]!=null&&cur>=s.a), lastS=S[S.length-1];
   const kp=[
-    {c:"var(--life)",k:"생활 바닥 · 마켓 없는 날", v:fmt(I(p.dayN)), d:cur===0?"기준값":`현재 대비 <b>${I(p.dayN)>=100?"+":""}${fmt(I(p.dayN)-100)}</b>`},
-    {c:"var(--event)",k:"이벤트 피크 · 정기 마켓 날", v:p.st.market?fmt(I(p.dayM)):"—", d:p.st.market?`바닥 대비 <b>+${fmt((p.dayM/p.dayN-1)*100)}%</b>`:"정기 마켓 개시 전"},
-    {c:"var(--life)",k:"골목 정식 점포(누적, 생존 반영)", v:fmt(p.st.formal,0)+"곳", d:p.st.popup?`지하도상가 팝업 <b>${p.st.popup}팀</b> 운영 중`:(cohorts()[0]&&cur<cohorts()[0].pp?`팝업존 개시 전(${ym(cohorts()[0].pp).s})`:"팝업 쉬는 기간")},
-    {c:"var(--plan)",k:"예정 수요 포착률", v:p.capNew!=null?fmt(p.capNew*100,1)+"%":"—", d:p.capNew!=null?`정책 없음 ${fmt(b.capNew*100,1)}% 대비 <b>+${fmt((p.capNew-b.capNew)*100,1)}%p</b>`:"예정 수요 유입 전"}
+    {c:"var(--life)",k:"상시 선택수요 지수", v:fmt(I(p.dB)), d:cur===0?"기준값(2026.11 = 100)":`현재 대비 <b>${sgn(I(p.dB)-100)}</b> · 정책 없음 ${fmt(I(b.dB))}`},
+    {c:"var(--event)",k:"이벤트일 · 팝업일 / 마켓일", v:(p.st.pw>0?fmt(I(p.dP)):"—")+` <small>/</small> `+(p.st.market?fmt(I(p.dM)):"—"),
+      d:p.st.pw>0?`팝업 가중 ${fmt(p.st.pw,1)} · 상시 대비 팝업일 <b>+${fmt((p.dP/p.dB-1)*100)}%</b>`:(p.st.market?"팝업 없는 달":"팝업·플리마켓 없음")},
+    {c:"var(--life)",k:"정식 점포 · 연계 목표 / 실제 영업", v:`${fmt(p.st.target)} <small>/</small> ${fmt(p.st.open,1)}`, d:cfg.on.formal?`연계 목표 누적 <b>${fmt(p.st.target)}팀</b> · 영업 점포(지연·미개업·폐업 반영)`:"정식 점포 끔"},
+    {c:"var(--plan)",k:"유입 수요 포착률(상시)", v:lastS?fmt(p.cap[lastS.k]*100,1)+"%":"—",
+      d:S.length?S.map(s=>`${s.k}차 ${fmt(p.cap[s.k]*100,1)}% <b>(+${fmt((p.cap[s.k]-b.cap[s.k])*100,1)}%p)</b>`).join(" · ")+" · 괄호 = 정책 없음 대비":"유입 전"}
   ];
-  $("kpis").innerHTML=kp.map(x=>`<div class="kpi" style="--c:${x.c}"><div class="k">${x.k}</div><div class="v">${x.v}</div><div class="d">${x.d}</div></div>`).join("");
+  $("kpis").innerHTML=kp.map(x=>`<div class="kpi" style="--c:${x.c}"><div class="bar-c"></div><div class="k">${x.k}</div><div class="v">${x.v}</div><div class="d">${x.d}</div></div>`).join("");
 
   moveCursor(); drawMap(p);
-  document.querySelectorAll(".comp-row").forEach(el=>el.classList.toggle("on",+el.dataset.m===nearestMile(cur)&&!el.classList.contains("ctrl")));
+  const nm=nearestMile(cur);
+  document.querySelectorAll(".comp-row").forEach(el=>el.classList.toggle("on",+el.dataset.m===nm&&!el.classList.contains("ctrl")));
 
-  // 카드 1: 이 시점의 골목
-  const C=cohorts(), act=C.filter(c=>{const f=phaseOf(c,cur);return f&&f!=="정식"}).map(c=>`${c.k}기 <b>${phaseOf(c,cur)}</b>`);
-  const done=C.filter(c=>cur>=c.f).length, pg=cfg.prog;
-  const infra=[[0,"제물포담소 개관"],[4,"거점센터(구 본관) 개소"],[idxOf(pg.marketStart),"광장 정기 마켓 월 1회"],[C[0]?C[0].pp:99,"지하도상가 팝업존 개시"],[19,"매입 상가 첫 입점"],[idxOf(pg.expMonth),"플리마켓 확장(담소 연계)"]]
-    .filter(x=>x[0]<=cur).slice(-2).map(x=>x[1]);
-  const newAct=cfg.newOrigins.filter(o=>cur>=idxOf(o.arrive)).map(o=>o.name);
-  $("c1t").textContent={pre:"정책 시행 전 상태입니다. 기수 모집과 거점 정비가 진행됩니다.",gap:"예정 수요가 들어오기 전, 마켓·팝업·골목 점포로 '갈 이유'를 먼저 만듭니다.",w1:"1차 예정 수요가 들어옵니다. 갭 기간에 갖춘 골목이 바로 흡수합니다.",co:"공공주택까지 들어온 뒤, 생활 상권과 이벤트 상권이 함께 돌아갑니다."}[ph.id];
+  const act=actText(cur), newAct=activeInflows().filter(o=>cur>=idxOf(o.arrive)).map(o=>shortName(o));
+  const nms=ph.names?ph.names.join("·"):"";
+  $("c1t").textContent={pre:"정책 시행 전입니다. 1기 모집과 구 본관 거점 정비가 진행됩니다.",
+    init:"유입 전, 초기 4개 기수가 3개월마다 이어지며 팝업과 플리마켓으로 '갈 이유'를 먼저 만듭니다.",
+    wait:"초기 4개 기수가 끝났습니다. 기수는 계속 돌고, 정식 점포가 골목에 쌓이며 유입을 기다립니다.",
+    st: ph.first?`${ph.k}차 유입(${nms})이 들어옵니다. 준비된 골목이 새 생활 수요를 받습니다.`:`${ph.k}차 유입(${nms})까지 더해져, 상시 수요와 이벤트가 함께 돌아갑니다.`}[ph.id];
   $("c1l").innerHTML=[
-    act.length?`진행 중: ${act.join(" · ")}`:"진행 중인 기수 없음(모집·준비)",
-    `정식 창업 완료 기수 <b>${done}개</b> · 골목 점포 <b>${fmt(p.st.formal)}곳</b>`,
-    infra.length?`거점: ${infra.join(" · ")}`:"거점: 준비 중",
-    `출발지: 기존 주민${newAct.length?" + <b>"+newAct.join(", ")+"</b>":""}`
+    act.length?`진행 중: <b>${act.join(" · ")}</b>`:"진행 중인 기수 없음",
+    `정식 창업 연계 목표 <b>${fmt(p.st.target)}팀</b> · 영업 점포 <b>${fmt(p.st.open,1)}곳</b>`,
+    p.st.market?`플리마켓: 매달 ${pg.marketDays}일 · 외부 부스 <b>${p.st.booths}개</b>${cur>=idxOf(pg.expMonth)?" (지상 정기 마켓)":" (초기 팝업 집객 보조)"}`:(cfg.on.market?"플리마켓: 개시 전":"플리마켓: 끔"),
+    `출발지: 기존 주민${newAct.length?" + <b>"+esc(newAct.join(", "))+"</b>":""}`
   ].map(x=>`<li>${x}</li>`).join("");
 
-  // 카드 2
   $("c2v").textContent=`${fmt(p.pOld*100,1)}%`;
-  $("c2t").textContent=cur===0?"기존 주민이 4개 상권 가운데 제물포를 고를 확률(평상시)":`기존 주민의 제물포 선택확률(평상시) · 현재 ${fmt(P[0].pOld*100,1)}%에서 ${p.pOld>=P[0].pOld?"+":""}${fmt((p.pOld-P[0].pOld)*100,1)}%p`;
+  $("c2t").textContent=cur===0?"기존 주민이 4개 상권 가운데 제물포를 고를 확률(상시)":`기존 주민의 제물포 선택확률(상시) · 현재 ${fmt(P[0].pOld*100,1)}%에서 ${p.pOld>=P[0].pOld?"+":""}${fmt((p.pOld-P[0].pOld)*100,1)}%p`;
 
-  // 카드 3
-  $("c3a").textContent=fmt(I(p.dayN)); $("c3b").textContent=p.st.market?fmt(I(p.dayM)):"—";
+  $("c3a").textContent=fmt(I(p.dB)); $("c3b").textContent=p.st.pw>0?fmt(I(p.dP)):"—"; $("c3c").textContent=p.st.market?fmt(I(p.dM)):"—";
   $("c3t").textContent={pre:"이벤트도 생활 수요도 얇은 상태입니다.",
-    gap:`마켓 날 수요가 바닥보다 ${fmt((p.dayM/p.dayN-1)*100)}% 높습니다. 예정 수요가 오기 전 공백을 이벤트가 메웁니다.`,
-    w1:`예정 수요가 바닥을 밀어 올리고, 마켓 날 피크는 그대로 유지됩니다.`,
-    co:`바닥은 현재의 ${fmt(I(p.dayN)/100,2)}배, 마켓 날은 ${fmt(I(p.dayM)/100,2)}배. 정책이 없으면 바닥은 ${fmt(R.I(b.dayN)/100,2)}배에 그칩니다.`}[ph.id];
-  const hot={pre:"c2",gap:"c3",w1:"c1",co:"c3"}[ph.id];
+    init:p.st.market?`팝업일은 상시보다 ${fmt((p.dP/p.dB-1)*100)}%, 플리마켓 주간은 ${fmt((p.dM/p.dB-1)*100)}% 높습니다. 유입 전 공백을 이벤트가 메웁니다.`:(p.st.pw>0?`팝업일은 상시보다 ${fmt((p.dP/p.dB-1)*100)}% 높습니다.`:"이벤트가 아직 없습니다."),
+    wait:`정식 점포가 쌓이며 상시선이 ${fmt(I(p.dB))}까지 올라왔습니다. 팝업 파형은 계속 이어집니다.`,
+    st: ph.first?`${ph.k}차 유입으로 상시선이 올라갑니다. 정책 없음 대비 상시 ${sgn(I(p.dB)-I(b.dB))}.`
+      :`상시는 현재의 ${fmt(I(p.dB)/100,2)}배, 마켓일은 ${fmt(I(p.dM)/100,2)}배. 같은 유입을 받은 정책 없음은 상시 ${fmt(I(b.dB)/100,2)}배.`}[ph.id];
+  const hot=ph.id==="st"?(ph.first?"c1":"c3"):{pre:"c2",init:"c3",wait:"c1"}[ph.id];
   ["c1","c2","c3"].forEach(id=>$(id).classList.toggle("hot",id===hot));
 
-  const SUB={pre:"동네엔 사람이 있지만, 캠퍼스 앞을 고르는 사람은 적습니다.",
-    gap: cur<phases().f1 ? "정기 마켓과 팝업이 먼저 사람을 부릅니다." : "마켓이 불러온 발길 위에, 골목 점포가 기수마다 쌓입니다.",
-    w1:"예정 수요가 들어올 때, 골목은 이미 준비돼 있습니다.",
-    co:"평소엔 생활 상권, 마켓 날엔 목적지 상권."};
-  const el=$("subtitle"), txt=SUB[ph.id];
+  const txt=ph.id==="st"?(ph.first?"새 생활 수요가 들어올 때, 골목은 이미 준비돼 있습니다.":(ph.last?"평소엔 생활 상권, 팝업과 마켓 날엔 목적지 상권.":"새 수요가 더해질수록 상시선이 한 칸씩 올라갑니다."))
+    :{pre:"동네엔 사람이 있지만, 캠퍼스 앞을 고르는 사람은 적습니다.",init:"팝업과 플리마켓이 먼저 사람을 부릅니다.",wait:"이벤트가 불러온 발길 위에, 정식 점포가 기수마다 쌓입니다."}[ph.id];
+  const el=$("subtitle");
   if(el.textContent!==txt){el.style.opacity=0;setTimeout(()=>{el.textContent=txt;el.style.opacity=1},120);}
 }
-const nearestMile=m=>MILES.reduce((a,x)=>Math.abs(x.m-m)<Math.abs(a-m)?x.m:a,MILES[0].m);
+const nearestMile=m=>miles().reduce((a,x)=>Math.abs(x.m-m)<Math.abs(a-m)?x.m:a,0);
 
 /* ===== 메인 차트 ===== */
-const CH={W:780,L:46,Rm:14,T:52,PB:262,G0:314,GR:10};
+const CH={W:780,L:46,Rm:14,T:56,PB:268,G0:308,LN:13};
 const cx=m=>CH.L+m*(CH.W-CH.L-CH.Rm)/(N-1);
 let cy=v=>0;
 function drawChart(){
-  const {P,B,I}=R, C=cohorts(), ph=phases(), step=(CH.W-CH.L-CH.Rm)/(N-1);
-  const all=[...P.map(r=>I(r.dayM)),...B.map(r=>I(r.dayN))];
+  const {P,B,I}=R, C=cohorts(), step=(CH.W-CH.L-CH.Rm)/(N-1), pg=cfg.prog;
+  const all=[...P.map(r=>I(r.dM)),...B.map(r=>I(r.dB))];
   const max=Math.ceil(Math.max(...all)*1.08/25)*25, ih=CH.PB-CH.T;
   cy=v=>CH.T+ih-(v/max)*ih;
   const tstep=max>300?100:50; let s="";
-  // 국면 띠
-  const bands=[[0,ph.mk-1,"준비",""],[ph.mk,ph.first-1,"갭 기간 · 이벤트가 수요를 끈다",""],[ph.first,ph.last-1,"1차 예정 수요",""],[ph.last,N-1,"공존",""]].filter(b=>b[1]>=b[0]);
-  for(const [a,z,t] of bands){const x0=cx(a)-step/2,x1=cx(z)+step/2;
-    s+=`<rect x="${Math.max(CH.L,x0)}" y="6" width="${Math.min(CH.W-CH.Rm,x1)-Math.max(CH.L,x0)-2}" height="18" rx="4" fill="#12244a" stroke="var(--line)"/>`;
-    if(x1-x0>46) s+=`<text x="${(Math.max(CH.L,x0)+Math.min(CH.W-CH.Rm,x1))/2}" y="19" text-anchor="middle" font-size="11" fill="var(--muted)">${t}</text>`;}
-  // 그리드
+  for(const [a,z,t] of phaseBands()){const x0=Math.max(CH.L,cx(a)-step/2),x1=Math.min(CH.W-CH.Rm,cx(z)+step/2);
+    s+=`<rect x="${x0}" y="6" width="${Math.max(1,x1-x0-2)}" height="18" rx="4" fill="#12244a" stroke="var(--line)"/>`;
+    if(x1-x0>40) s+=`<text x="${(x0+x1)/2}" y="19" text-anchor="middle" font-size="${x1-x0>90?11:9.5}" fill="var(--muted)">${t}</text>`;}
   for(let v=0;v<=max;v+=tstep) s+=`<line x1="${CH.L}" x2="${CH.W-CH.Rm}" y1="${cy(v)}" y2="${cy(v)}" stroke="var(--line)" opacity=".55"/><text x="${CH.L-8}" y="${cy(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`;
-  // 팝업 음영
-  for(const c of C){ if(c.pp>N-1) continue; const z=Math.min(c.f-1,N-1);
-    s+=`<rect x="${cx(c.pp)-step/2}" y="${CH.T}" width="${cx(z)-cx(c.pp)+step}" height="${ih}" fill="var(--event)" opacity=".2"/>`;}
-  // 이벤트 표시선
-  const marks=[[ph.mk,"정기 마켓 개시"],[ph.f1,"1기 정식 창업"]];
-  const groups={}; for(const o of cfg.newOrigins){const k=idxOf(o.arrive);(groups[k]=groups[k]||[]).push(o.name.replace(" 종사자",""));}
-  const gk=Object.keys(groups).map(Number).sort((a,b)=>a-b); const merged=[];
-  for(const k of gk){const last=merged[merged.length-1]; if(last&&k-last[0]<=2){last[1].push(...groups[k]);} else merged.push([k,[...groups[k]]]);}
-  merged.forEach(([k,names])=>marks.push([k,names.join("·")+" 유입"]));
-  marks.filter(x=>x[0]<N).forEach(([m,t],i)=>{const x=cx(m), ly=CH.T+12+(i%2)*14, right=x>CH.W-150;
+  s+=`<text x="${CH.L}" y="${CH.T-6}" font-size="10.5" fill="var(--muted)">선택수요 지수 (2026.11 상시 = 100)</text>`;
+  const marks=[];
+  if(C[0]&&cfg.on.formal) marks.push([C[0].f,"1기 정식 창업 연계"]);
+  if(cfg.on.market) marks.push([idxOf(pg.expMonth),"지상 정기 플리마켓"]);
+  for(const o of activeInflows()) marks.push([idxOf(o.arrive),`${o.stage}차 ${esc(shortName(o))} ${ym(idxOf(o.arrive)).s}`]);
+  marks.filter(x=>x[0]>=0&&x[0]<N).sort((a,b)=>a[0]-b[0]).forEach(([m,t],i)=>{const x=cx(m), ly=CH.T+12+(i%3)*13, right=x>CH.W-170;
     s+=`<line x1="${x}" x2="${x}" y1="${CH.T}" y2="${CH.PB}" stroke="var(--faint)" stroke-dasharray="3 4"/>`;
-    s+=`<text x="${right?x-5:x+5}" y="${ly}" text-anchor="${right?"end":"start"}" font-size="10.5" fill="var(--muted)" stroke="var(--card)" stroke-width="3" paint-order="stroke">${t}</text>`;});
-  // 현재 기준선
+    s+=`<text x="${right?x-5:x+5}" y="${ly}" text-anchor="${right?"end":"start"}" font-size="10" fill="var(--muted)" stroke="var(--card)" stroke-width="3" paint-order="stroke">${t}</text>`;});
   s+=`<line x1="${CH.L}" x2="${CH.W-CH.Rm}" y1="${cy(100)}" y2="${cy(100)}" stroke="var(--ghost)" stroke-dasharray="2 4" opacity=".7"/>`;
-  // B0
-  if(showB0){s+=`<path d="${B.map((r,i)=>`${i?"L":"M"}${cx(i).toFixed(1)} ${cy(I(r.dayN)).toFixed(1)}`).join(" ")}" fill="none" stroke="var(--ghost)" stroke-width="1.6" stroke-dasharray="6 4"/>`;
-    s+=`<text x="${cx(N-1)}" y="${cy(I(B[N-1].dayN))+15}" text-anchor="end" font-size="11" fill="var(--muted)" stroke="var(--card)" stroke-width="3" paint-order="stroke">정책 없음 ${fmt(I(B[N-1].dayN))}</text>`;}
-  // 마켓 줄기
-  P.forEach((r,i)=>{ if(r.st.market) s+=`<line x1="${cx(i)}" x2="${cx(i)}" y1="${cy(I(r.dayN))}" y2="${cy(I(r.dayM))}" stroke="var(--event)" stroke-width="1.4" opacity=".55"/>`;});
-  // 생활 바닥 선
-  const area=P.map((r,i)=>`${i?"L":"M"}${cx(i).toFixed(1)} ${cy(I(r.dayN)).toFixed(1)}`).join(" ");
-  s+=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--life)" stop-opacity=".35"/><stop offset="1" stop-color="var(--life)" stop-opacity=".02"/></linearGradient></defs>`;
-  s+=`<path d="${area} L${cx(N-1)} ${cy(0)} L${cx(0)} ${cy(0)} Z" fill="url(#ga)"/>`;
-  s+=`<path d="${area}" fill="none" stroke="var(--life)" stroke-width="2.4" stroke-linejoin="round"/>`;
-  // 마켓 점
-  P.forEach((r,i)=>{ if(r.st.market) s+=`<circle cx="${cx(i)}" cy="${cy(I(r.dayM))}" r="4" fill="var(--event)" stroke="var(--card)" stroke-width="2"/>`;});
-  // 끝 라벨
+  const line=P.map((r,i)=>`${i?"L":"M"}${cx(i).toFixed(1)} ${cy(I(r.dB)).toFixed(1)}`).join(" ");
+  s+=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--life)" stop-opacity=".3"/><stop offset="1" stop-color="var(--life)" stop-opacity=".02"/></linearGradient></defs>`;
+  s+=`<path d="${line} L${cx(N-1)} ${cy(0)} L${cx(0)} ${cy(0)} Z" fill="url(#ga)"/>`;
+  P.forEach((r,i)=>{ if(r.st.pw>0){const y0=cy(I(r.dB)),y1=cy(I(r.dP));
+    s+=`<rect x="${(cx(i)-step/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${step.toFixed(1)}" height="${Math.max(0.5,y0-y1).toFixed(1)}" fill="var(--popup)" opacity=".55"/>`;}});
+  if(showB0){s+=`<path d="${B.map((r,i)=>`${i?"L":"M"}${cx(i).toFixed(1)} ${cy(I(r.dB)).toFixed(1)}`).join(" ")}" fill="none" stroke="var(--ghost)" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+    s+=`<text x="${cx(N-1)}" y="${cy(I(B[N-1].dB))+15}" text-anchor="end" font-size="11" fill="var(--muted)" stroke="var(--card)" stroke-width="3" paint-order="stroke">정책 없음 ${fmt(I(B[N-1].dB))}</text>`;}
+  s+=`<path d="${line}" fill="none" stroke="var(--life)" stroke-width="2.4" stroke-linejoin="round"/>`;
+  P.forEach((r,i)=>{ if(r.st.market){
+    s+=`<line x1="${cx(i)}" x2="${cx(i)}" y1="${cy(I(r.dP))}" y2="${cy(I(r.dM))}" stroke="var(--event)" stroke-width="1.2" opacity=".6"/>`;
+    s+=`<circle cx="${cx(i)}" cy="${cy(I(r.dM))}" r="3.4" fill="var(--event)" stroke="var(--card)" stroke-width="1.5"/>`;}});
   const e=P[N-1];
-  s+=`<text x="${cx(N-1)-8}" y="${cy(I(e.dayM))-9}" text-anchor="end" font-size="11.5" fill="var(--ink)" font-weight="600" stroke="var(--card)" stroke-width="3" paint-order="stroke">마켓 날 ${fmt(I(e.dayM))}</text>`;
-  s+=`<text x="${cx(N-1)-8}" y="${cy(I(e.dayN))-9}" text-anchor="end" font-size="11.5" fill="var(--ink)" font-weight="600" stroke="var(--card)" stroke-width="3" paint-order="stroke">바닥 ${fmt(I(e.dayN))}</text>`;
-  // x축
+  if(e.st.market) s+=`<text x="${cx(N-1)-8}" y="${cy(I(e.dM))-9}" text-anchor="end" font-size="11.5" fill="var(--ink)" font-weight="600" stroke="var(--card)" stroke-width="3" paint-order="stroke">마켓일 ${fmt(I(e.dM))}</text>`;
+  s+=`<text x="${cx(N-1)-8}" y="${cy(I(e.dB))-9}" text-anchor="end" font-size="11.5" fill="var(--ink)" font-weight="600" stroke="var(--card)" stroke-width="3" paint-order="stroke">상시 ${fmt(I(e.dB))}</text>`;
   for(let i=0;i<N;i++){const d=ym(i); if(d.m===1){s+=`<line x1="${cx(i)}" x2="${cx(i)}" y1="${CH.PB}" y2="${CH.PB+5}" stroke="var(--muted)"/><text x="${cx(i)}" y="${CH.PB+18}" text-anchor="middle" font-size="11" fill="var(--muted)">${d.y}</text>`;}}
-  // 기수 간트
-  s+=`<text x="${CH.L}" y="${CH.G0-8}" font-size="11" fill="var(--muted)">기수별 일정 (기수당 ${cfg.prog.teams}팀, 연 2기)</text>`;
-  C.forEach((c,r)=>{const y=CH.G0+r*CH.GR, h=CH.GR-3;
-    s+=`<text x="${CH.L-8}" y="${y+h-0.5}" text-anchor="end" font-size="9.5" fill="var(--muted)">${c.k}기</text>`;
-    const seg=(a,z,col,op)=>{if(a>N-1)return;const zz=Math.min(z,N-1);s+=`<rect x="${cx(a)-step/2+1}" y="${y}" width="${Math.max(1,cx(zz)-cx(a)+step-2)}" height="${h}" rx="2" fill="${col}" opacity="${op}"/>`;};
-    seg(c.s,c.mk-1,"#3a4f78",1); seg(c.mk,c.pp-1,"var(--event)",.55); seg(c.pp,c.f-1,"var(--event)",1); seg(c.f,N-1,"var(--life)",.85);});
-  const GH=CH.G0+C.length*CH.GR+6;
+  s+=`<text x="${CH.L}" y="${CH.G0-7}" font-size="11" fill="var(--muted)">기수별 일정 · ${pg.cadence}개월마다 새 기수, 기수당 ${pg.teams}팀 · 숫자 = 기수</text>`;
+  ["홀수","짝수"].forEach((t,r)=>s+=`<text x="${CH.L-8}" y="${CH.G0+r*CH.LN+9}" text-anchor="end" font-size="9.5" fill="var(--muted)">${t}</text>`);
+  C.forEach(c=>{const y=CH.G0+((c.k-1)%2)*CH.LN, h=CH.LN-3, op=c.init?1:.5;
+    const seg=(a,z,col)=>{if(a>N-1)return null;const zz=Math.min(z,N-1);const x=cx(a)-step/2+1,w=Math.max(1,cx(zz)-cx(a)+step-2);s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${col}" opacity="${op}"/>`;return [x,w];};
+    seg(c.s,c.pp-1,"#3a4f78"); const pr=seg(c.pp,c.f-1,cfg.on.popup?"var(--popup)":"#5a4a2c");
+    if(pr&&pr[1]>12) s+=`<text x="${pr[0]+pr[1]/2}" y="${y+h-2}" text-anchor="middle" font-size="8.5" font-weight="600" fill="#1b1200">${c.k}</text>`;});
+  const GH=CH.G0+2*CH.LN+8;
   $("chart").setAttribute("viewBox",`0 0 ${CH.W} ${GH}`);
-  // 커서
-  s+=`<g id="cursor"><line id="curL" y1="${CH.T}" y2="${GH-4}" stroke="var(--ui)" stroke-width="1.2" opacity=".85"/><circle id="curB" r="5" fill="var(--life)" stroke="#fff" stroke-width="1.5"/><circle id="curM" r="5.5" fill="var(--event)" stroke="#fff" stroke-width="1.5"/></g>`;
+  s+=`<g id="cursor"><line id="curL" y1="${CH.T}" y2="${GH-4}" stroke="var(--ui)" stroke-width="1.2" opacity=".85"/><circle id="curB" r="5" fill="var(--life)" stroke="#fff" stroke-width="1.5"/><circle id="curM" r="5" fill="var(--event)" stroke="#fff" stroke-width="1.5"/></g>`;
   s+=`<rect id="hit" x="${CH.L-step/2}" y="0" width="${CH.W-CH.L-CH.Rm+step}" height="${GH}" fill="transparent" style="cursor:crosshair"/>`;
   $("chart").innerHTML=s;
   const hit=$("hit");
@@ -458,94 +575,171 @@ function drawChart(){
 function monthAt(ev){const svg=$("chart"),pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
   return Math.max(0,Math.min(N-1,Math.round((p.x-CH.L)/((CH.W-CH.L-CH.Rm)/(N-1)))));}
 function showTip(ev){
-  const m=monthAt(ev), {P,B,I}=R, p=P[m], b=B[m], tip=$("tip"), card=$("chartCard").getBoundingClientRect();
-  const C=cohorts(), act=C.map(c=>[c.k,phaseOf(c,m)]).filter(x=>x[1]&&x[1]!=="정식").map(x=>`${x[0]}기 ${x[1]}`).join(" · ");
+  const m=monthAt(ev), {P,B,I}=R, p=P[m], b=B[m], tip=$("tip"), card=$("chartCard").getBoundingClientRect(), act=actText(m);
   tip.innerHTML=`<b>${ym(m).s}</b> <span style="color:var(--muted);font-size:11px">${phaseName(m).lbl}</span>
-   <div class="r"><span><i class="sw" style="background:var(--life)"></i>생활 바닥</span><span>${fmt(I(p.dayN))}</span></div>
-   <div class="r"><span><i class="sw" style="background:var(--event);border-radius:50%"></i>마켓 날</span><span>${p.st.market?fmt(I(p.dayM)):"—"}</span></div>
-   <div class="r"><span><i class="sw" style="border:1px dashed var(--ghost)"></i>정책 없음</span><span>${fmt(I(b.dayN))}</span></div>
-   <div class="r"><span>골목 정식 점포</span><span>${fmt(p.st.formal)}곳</span></div>
-   ${act?`<div style="color:var(--muted);margin-top:4px;font-size:11px">${act}</div>`:""}`;
+   <div class="r"><span><i class="sw" style="background:var(--life)"></i>상시</span><span>${fmt(I(p.dB))}</span></div>
+   <div class="r"><span><i class="sw" style="background:var(--popup)"></i>팝업일</span><span>${p.st.pw>0?fmt(I(p.dP)):"—"}</span></div>
+   <div class="r"><span><i class="sw" style="background:var(--event);border-radius:50%"></i>마켓일</span><span>${p.st.market?fmt(I(p.dM)):"—"}</span></div>
+   <div class="r"><span><i class="sw" style="border:1px dashed var(--ghost)"></i>정책 없음 상시</span><span>${fmt(I(b.dB))}</span></div>
+   <div class="r"><span>연계 목표 / 영업 점포</span><span>${fmt(p.st.target)} / ${fmt(p.st.open,1)}</span></div>
+   ${act.length?`<div style="color:var(--muted);margin-top:4px;font-size:11px">${act.join(" · ")}</div>`:""}`;
   let x=ev.clientX-card.left+14, y=ev.clientY-card.top+14;
-  if(x>card.width-200) x=ev.clientX-card.left-200;
+  if(x>card.width-210) x=ev.clientX-card.left-210;
   tip.style.left=x+"px"; tip.style.top=y+"px"; tip.style.opacity=1;
 }
 function moveCursor(){
   const {P,I}=R, p=P[cur], x=cx(cur);
   const L=$("curL"); if(!L) return; L.setAttribute("x1",x); L.setAttribute("x2",x);
-  const b=$("curB"); b.setAttribute("cx",x); b.setAttribute("cy",cy(I(p.dayN)));
-  const mm=$("curM"); mm.setAttribute("cx",x); mm.setAttribute("cy",cy(I(p.dayM))); mm.style.display=p.st.market?"":"none";
+  const b=$("curB"); b.setAttribute("cx",x); b.setAttribute("cy",cy(I(p.dB)));
+  const mm=$("curM"); mm.setAttribute("cx",x); mm.setAttribute("cy",cy(I(p.dM))); mm.style.display=p.st.market?"":"none";
 }
 
 /* ===== 지도 ===== */
 const LBL={jm:[-10,-10,"end"],suk:[8,-12,"start"],inha:[16,5,"start"],juan:[14,5,"start"],
   o1:[12,22,"start"],o2:[-12,4,"end"],o3:[-16,5,"end"],o4:[0,26,"middle"],pm:[0,17,"middle"],
-  dw:[12,14,"start"],n1:[14,6,"start"],n2:[10,20,"start"],st:[-12,-6,"end"]};
+  dw:[12,14,"start"],ph:[14,6,"start"],ysq:[10,20,"start"],st:[-12,10,"end"],fl:[-12,-4,"end"]};
 function drawMap(r){
-  const W=420,H=330,pad=30, all=[...cfg.centers,...cfg.origins,...cfg.newOrigins];
+  const W=420,H=330,pad=30, all=[...cfg.centers,...cfg.origins,...cfg.inflows];
   const la=all.map(p=>p.lat), lo=all.map(p=>p.lng), AS=1.26;
   const minLa=Math.min(...la),maxLa=Math.max(...la),minLo=Math.min(...lo),maxLo=Math.max(...lo);
-  const k=Math.min((W-2*pad-120)/(maxLo-minLo),(H-2*pad)/((maxLa-minLa)*AS));
+  const k=Math.min((W-2*pad-120)/Math.max(maxLo-minLo,1e-6),(H-2*pad)/(Math.max(maxLa-minLa,1e-6)*AS));
   const ox=pad+50+((W-2*pad-120)-(maxLo-minLo)*k)/2, oy=pad+((H-2*pad)-(maxLa-minLa)*AS*k)/2;
+  MAPT={ox,oy,k,minLo,minLa,AS,H};
   const X=p=>ox+(p.lng-minLo)*k, Y=p=>H-oy-(p.lat-minLa)*AS*k;
-  const jm=cfg.centers.find(c=>c.id==="jm"), maxD=Math.max(...r.flows.map(f=>f.d)), st=cfg.station;
+  const jm=cfg.centers.find(c=>c.id==="jm"), maxD=Math.max(1e-9,...r.flows.map(f=>f.d)), st=cfg.station, fl=cfg.flea;
   let s="",labels="";
   const lab=(id,x0,y0,txt,col,wt,op=1)=>{const [dx,dy,a]=LBL[id]||[0,16,"middle"];
-    labels+=`<text x="${x0+dx}" y="${y0+dy}" text-anchor="${a}" font-size="10.5" font-weight="${wt}" fill="${col}" opacity="${op}" stroke="var(--card)" stroke-width="3" paint-order="stroke">${txt}</text>`;};
-  for(const f of r.flows){const isN=cfg.newOrigins.includes(f.o);
-    s+=`<line x1="${X(f.o)}" y1="${Y(f.o)}" x2="${X(jm)}" y2="${Y(jm)}" stroke="${isN?"var(--plan)":"var(--life)"}" stroke-opacity=".75" stroke-width="${(1+7*f.d/maxD).toFixed(1)}" stroke-linecap="round"/>`;}
-  for(const o of [...cfg.origins,...cfg.newOrigins]){
-    const isN=cfg.newOrigins.includes(o), on=!isN||cur>=idxOf(o.arrive), rr=3+Math.sqrt(o.pop)/20;
-    s+=`<circle cx="${X(o)}" cy="${Y(o)}" r="${rr.toFixed(1)}" fill="${isN?"var(--plan)":"#1c3a63"}" fill-opacity="${on?(isN?.45:.85):0}" stroke="${isN?"var(--plan)":"var(--life)"}" stroke-opacity="${on?.95:.4}" ${isN&&!on?'stroke-dasharray="3 3"':""}/>`;
-    lab(o.id,X(o),Y(o),o.name+(isN&&!on?` (${o.arrive.replace("-",".")})`:""),"var(--muted)",400,on?1:.6);
-  }
-  // 제물포역: 팝업존·광장 마켓
-  const evOn=r.st.popup||r.st.market;
-  s+=`<path d="M${X(st)} ${Y(st)-6} L${X(st)+6} ${Y(st)} L${X(st)} ${Y(st)+6} L${X(st)-6} ${Y(st)} Z" fill="${evOn?"var(--event)":"transparent"}" stroke="var(--event)" stroke-width="1.5"/>`;
-  lab("st",X(st),Y(st),r.st.popup?"제물포역 · 팝업 운영 중":(r.st.market?"제물포역 · 광장 마켓":"제물포역"),evOn?"#f3c27a":"var(--muted)",evOn?600:400);
+    labels+=`<text x="${x0+dx}" y="${y0+dy}" text-anchor="${a}" font-size="10.5" font-weight="${wt}" fill="${col}" opacity="${op}" stroke="var(--card)" stroke-width="3" paint-order="stroke">${esc(txt)}</text>`;};
+  for(const f of r.flows){
+    s+=`<line x1="${X(f.o)}" y1="${Y(f.o)}" x2="${X(jm)}" y2="${Y(jm)}" stroke="${f.isNew?"var(--plan)":"var(--life)"}" stroke-opacity=".75" stroke-width="${(1+7*f.d/maxD).toFixed(1)}" stroke-linecap="round"/>`;}
+  for(const o of cfg.origins){ const rr=3+Math.sqrt(o.pop)/20;
+    s+=`<circle cx="${X(o)}" cy="${Y(o)}" r="${rr.toFixed(1)}" fill="#1c3a63" fill-opacity=".85" stroke="var(--life)"/>`; lab(o.id,X(o),Y(o),o.name,"var(--muted)",400); }
+  cfg.inflows.forEach((o,i)=>{ if(!o.on&&pickIdx!==i) return;
+    const on=cur>=idxOf(o.arrive), rr=3+Math.sqrt(Math.max(0,fullPop(o)))/20, pk=pickIdx===i;
+    s+=`<circle cx="${X(o)}" cy="${Y(o)}" r="${rr.toFixed(1)}" fill="var(--plan)" fill-opacity="${on?.45:0}" stroke="${pk?"#fff":"var(--plan)"}" stroke-width="${pk?2:1}" stroke-opacity="${on||pk?.95:.45}" ${!on?'stroke-dasharray="3 3"':""}/>`;
+    lab(o.id,X(o),Y(o),shortName(o)+(!on?` (${String(o.arrive).replace("-",".")})`:""),pk?"#fff":"var(--muted)",pk?600:400,on||pk?1:.6);
+  });
+  const pOn=r.st.pw>0, mOn=r.st.market;
+  s+=`<path d="M${X(st)} ${Y(st)-6} L${X(st)+6} ${Y(st)} L${X(st)} ${Y(st)+6} L${X(st)-6} ${Y(st)} Z" fill="${pOn?"var(--popup)":"transparent"}" stroke="var(--popup)" stroke-width="1.5"/>`;
+  lab("st",X(st),Y(st),pOn?"지하도상가 팝업 운영 중":"지하도상가 팝업존",pOn?"#f3c27a":"var(--muted)",pOn?600:400);
+  s+=`<circle cx="${X(fl)}" cy="${Y(fl)}" r="4.5" fill="${mOn?"var(--event)":"transparent"}" stroke="var(--event)" stroke-width="1.5"/>`;
+  lab("fl",X(fl),Y(fl),mOn?"플리마켓(매달 1주일)":"플리마켓",mOn?"#f3c27a":"var(--muted)",mOn?600:400);
   for(const c of cfg.centers){
-    const S=c.id==="jm"?r.st.sN:c.S, w=6+Math.sqrt(S)*1.1, isJ=c.id==="jm";
+    const S=c.id==="jm"?r.st.sB:c.S, w=6+Math.sqrt(S)*1.1, isJ=c.id==="jm";
     s+=`<rect x="${X(c)-w/2}" y="${Y(c)-w/2}" width="${w}" height="${w}" rx="3" fill="${isJ?"var(--life)":"#2a3d63"}" stroke="${isJ?"#d9fbff":"var(--muted)"}" stroke-width="${isJ?1.5:1}"/>`;
-    lab(c.id,X(c),Y(c),`${c.name} ${fmt(S)}`,isJ?"var(--ink)":"#b9c7de",isJ?700:500);
+    lab(c.id,X(c),Y(c),`${c.name} ${fmt(S,isJ&&S%1?1:0)}`,isJ?"var(--ink)":"#b9c7de",isJ?700:500);
   }
   $("map").innerHTML=s+labels;
+  $("map").classList.toggle("picking",pickIdx!=null);
+  $("pickNote").textContent=pickIdx!=null&&cfg.inflows[pickIdx]?`'${cfg.inflows[pickIdx].name}' 위치 지정 중 · 지도를 클릭하세요 (Esc 취소)`:"";
 }
+$("map").addEventListener("click",ev=>{
+  if(pickIdx==null||!MAPT) return;
+  const svg=$("map"),pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  const T=MAPT, o=cfg.inflows[pickIdx]; if(!o){pickIdx=null;return;}
+  o.lng=+((q.x-T.ox)/T.k+T.minLo).toFixed(5); o.lat=+(((T.H-T.oy)-q.y)/(T.AS*T.k)+T.minLa).toFixed(5);
+  pickIdx=null; renderMgr(); recompute();
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&pickIdx!=null){ pickIdx=null; drawMap(R.P[cur]); renderMgr(); } });
 
-/* ===== 월 수요 구성 ===== */
+/* ===== 월 선택수요 구성 ===== */
 function drawComp(){
-  const {P,B,MI}=R, rows=[...MILES.map(x=>({lbl:x.l,m:x.m,r:P[x.m]})),{lbl:"정책 없음",m:N-1,r:B[N-1],ctrl:true}];
+  const {P,B,MI}=R, rows=[...miles().map(x=>({lbl:x.l,m:x.m,r:P[x.m]})),{lbl:"정책 없음 · 끝",m:N-1,r:B[N-1],ctrl:true}];
   const max=Math.max(...rows.map(x=>MI(x.r.month)));
   $("comp").innerHTML=rows.map(x=>{const w=v=>(MI(v)/max*100).toFixed(2)+"%";
     return `<div class="comp-row ${x.ctrl?"ctrl":""}" data-m="${x.m}"><div class="nm">${x.lbl} <small>${ym(x.m).s}</small></div>
-    <div class="comp-track"><span style="width:${w(x.r.oldMonth)};background:var(--life)"></span>${x.r.newMonth>0?`<span style="width:${w(x.r.newMonth)};background:var(--plan)"></span>`:""}${x.r.eventMonth>0?`<span style="width:${w(x.r.eventMonth)};background:var(--event)"></span>`:""}</div>
+    <div class="comp-track"><span style="width:${w(x.r.oldMonth)};background:var(--life)"></span>${x.r.newMonth>0?`<span style="width:${w(x.r.newMonth)};background:var(--plan)"></span>`:""}${x.r.popupMonth>0?`<span style="width:${w(x.r.popupMonth)};background:var(--popup)"></span>`:""}${x.r.eventMonth>0?`<span style="width:${w(x.r.eventMonth)};background:var(--event)"></span>`:""}</div>
     <div class="tot">${fmt(MI(x.r.month))}</div></div>`;}).join("");
 }
-function drawTable(){
-  const {P,B,I}=R; let h=`<tr><th>시점</th><th>국면</th><th style="text-align:right">생활 바닥</th><th style="text-align:right">마켓 날</th><th style="text-align:right">정책 없음</th><th style="text-align:right">골목 점포</th><th style="text-align:right">제물포 매력도(평상시)</th></tr>`;
-  for(let m=0;m<N;m+=6){const p=P[m],b=B[m];h+=`<tr><td>${ym(m).s}</td><td>${phaseName(m).lbl}</td><td class="num">${fmt(I(p.dayN))}</td><td class="num">${p.st.market?fmt(I(p.dayM)):"—"}</td><td class="num">${fmt(I(b.dayN))}</td><td class="num">${fmt(p.st.formal)}</td><td class="num">${fmt(p.st.sN)}</td></tr>`;}
-  const p=P[N-1],b=B[N-1]; h+=`<tr><td>${ym(N-1).s}</td><td>${phaseName(N-1).lbl}</td><td class="num">${fmt(I(p.dayN))}</td><td class="num">${fmt(I(p.dayM))}</td><td class="num">${fmt(I(b.dayN))}</td><td class="num">${fmt(p.st.formal)}</td><td class="num">${fmt(p.st.sN)}</td></tr>`;
-  $("dataTbl").innerHTML=h;
+
+/* ===== 검산·비교 표 ===== */
+function drawTables(){
+  const {P,B,I,MI}=R;
+  let h=`<tr><th>검산 경계월</th><th>내용</th><th>진행 기수</th><th class="n">S 상시/팝업/마켓</th><th class="n">연계 목표</th><th class="n">영업 점포</th><th class="n">상시</th><th class="n">팝업일</th><th class="n">마켓일</th><th class="n">월 총량</th><th class="n">정책 없음 상시</th></tr>`;
+  for(const x of checkMonths()){const p=P[x.m],b=B[x.m];
+    h+=`<tr><td>${ym(x.m).s}</td><td>${esc(x.l)}</td><td>${actText(x.m).join(" · ")||"—"}</td><td class="n">${fmt(p.st.sB,1)} / ${fmt(p.st.sP,1)} / ${fmt(p.st.sM,1)}</td><td class="n">${fmt(p.st.target)}</td><td class="n">${fmt(p.st.open,1)}</td><td class="n">${fmt(I(p.dB),1)}</td><td class="n">${p.st.pw>0?fmt(I(p.dP),1):"—"}</td><td class="n">${p.st.market?fmt(I(p.dM),1):"—"}</td><td class="n">${fmt(MI(p.month),1)}</td><td class="n">${fmt(I(b.dB),1)}</td></tr>`;}
+  $("chkTbl").innerHTML=h;
+  const pairs=phases().S.map(s=>[`${s.k}차 유입 (${esc(s.names.join("·"))})`,s.a-1,s.z]).filter(x=>x[1]>=0&&x[2]<N);
+  let g=`<tr><th>비교</th><th>직전</th><th>직후</th><th class="n">정책 있음 상시</th><th class="n">변화</th><th class="n">정책 없음 상시</th><th class="n">변화</th><th class="n">직후 정책 효과(상시 차이)</th></tr>`;
+  for(const [l,a,z] of pairs){const pa=I(P[a].dB),pz=I(P[z].dB),ba=I(B[a].dB),bz=I(B[z].dB);
+    g+=`<tr><td>${l}</td><td>${ym(a).s}</td><td>${ym(z).s}</td><td class="n">${fmt(pa,1)} → ${fmt(pz,1)}</td><td class="n">${pz-pa>=0?"+":""}${fmt(pz-pa,1)}</td><td class="n">${fmt(ba,1)} → ${fmt(bz,1)}</td><td class="n">${bz-ba>=0?"+":""}${fmt(bz-ba,1)}</td><td class="n">${pz-bz>=0?"+":""}${fmt(pz-bz,1)}</td></tr>`;}
+  if(!pairs.length) g+=`<tr><td colspan="8" style="color:var(--muted)">켜진 유입 수요가 없습니다.</td></tr>`;
+  $("cmpTbl").innerHTML=g;
 }
 
-/* ===== 입력 표 ===== */
-const SRC={real:["실측·통계","real"],plan:["기획안·보도","plan"],assume:["가정","assume"]};
+/* ===== 유입 수요 관리 표 ===== */
+const SRC={real:["실측·통계","real"],plan:["기획안·보도","plan"],est:["추정","est"],assume:["가정","assume"]};
+function renderMgr(){
+  $("hhInp").value=cfg.hh;
+  const I=(i,k,v,type,cls,dis)=>`<input data-g="inflows" data-i="${i}" data-k="${k}" type="${type}" class="${cls||""}" ${type==="number"?'min="0" step="any"':""} value="${esc(v)}" ${dis?"disabled":""}>`;
+  const Sel=(i,k,v,opts)=>`<select data-g="inflows" data-i="${i}" data-k="${k}">${opts.map(([val,l])=>`<option value="${val}" ${String(v)===String(val)?"selected":""}>${l}</option>`).join("")}</select>`;
+  let h=`<tr><th>켜기</th><th>이름</th><th>단계</th><th>유형</th><th>인원 / 세대</th><th>입주율</th><th>순증</th><th>시작월</th><th>도달(개월)</th><th>상업시설 S</th><th>근거</th><th>위치</th><th>메모</th><th></th></tr>`;
+  cfg.inflows.forEach((o,i)=>{ const ppl=o.kind==="people";
+    h+=`<tr><td><input data-g="inflows" data-i="${i}" data-k="on" type="checkbox" ${o.on?"checked":""} aria-label="${esc(o.name)} 켜기" style="width:auto"></td>
+      <td>${I(i,"name",o.name,"text","t")}</td>
+      <td>${I(i,"stage",o.stage,"number","s")}</td>
+      <td>${Sel(i,"kind",o.kind,[["people","인원"],["house","세대"]])}</td>
+      <td>${ppl?I(i,"people",o.people,"number","m"):I(i,"units",o.units,"number","m")}</td>
+      <td>${I(i,"occ",o.occ,"number","s",ppl)}</td>
+      <td>${I(i,"net",o.net,"number","s",ppl)}</td>
+      <td>${I(i,"arrive",o.arrive,"month")}</td>
+      <td>${I(i,"ramp",o.ramp,"number","s")}</td>
+      <td>${I(i,"stores",o.stores||0,"number","s")}</td>
+      <td>${Sel(i,"src",o.src,Object.entries(SRC).map(([k,v])=>[k,v[0]]))}</td>
+      <td><button class="btn" type="button" data-pick="${i}" aria-pressed="${pickIdx===i}">${pickIdx===i?"지도 클릭…":"지도에서 찍기"}</button> <small style="color:var(--muted);font-family:var(--font-mono)">${(+o.lat).toFixed(4)}, ${(+o.lng).toFixed(4)}</small></td>
+      <td>${I(i,"note",o.note||"","text","t")}</td>
+      <td><button class="btn del" type="button" data-del="${i}" aria-label="${esc(o.name)} 삭제">삭제</button></td></tr>`;});
+  if(!cfg.inflows.length) h+=`<tr><td colspan="14" style="color:var(--muted)">유입 수요가 없습니다. '+ 수요 추가'로 넣으세요.</td></tr>`;
+  $("mgrTbl").innerHTML=h;
+}
+function addInflow(){
+  const maxSt=cfg.inflows.reduce((a,o)=>Math.max(a,o.stage|0),0)||1;
+  cfg.inflows.push({id:"u"+Date.now().toString(36), on:true, stage:maxSt, name:"새 수요", lat:cfg.station.lat, lng:cfg.station.lng,
+    kind:"people", people:500, units:0, occ:1, net:1, arrive:"2030-01", ramp:0, stores:0, src:"assume", note:""});
+  pickIdx=cfg.inflows.length-1; $("mgr").open=true; renderMgr(); recompute();
+  $("map").scrollIntoView({behavior:"smooth",block:"center"});
+}
+$("mgrTbl").addEventListener("change",e=>{const t=e.target; if(t.dataset.g!=="inflows") return;
+  const o=cfg.inflows[+t.dataset.i], k=t.dataset.k; if(!o) return;
+  if(t.type==="checkbox") o[k]=t.checked;
+  else if(t.type==="month"){ if(!/^\d{4}-\d{2}$/.test(t.value)) return; o[k]=t.value; }
+  else if(t.type==="number"){ let v=Math.max(0,parseFloat(t.value)||0); if(k==="stage") v=Math.max(1,Math.round(v)); if(k==="occ"||k==="net") v=Math.min(1,v); o[k]=v; }
+  else o[k]=t.value;
+  if(k==="kind"||k==="stage") renderMgr();
+  recompute();});
+$("mgrTbl").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.del!=null){ const i=+b.dataset.del; cfg.inflows.splice(i,1); if(pickIdx===i) pickIdx=null; else if(pickIdx>i) pickIdx--; renderMgr(); recompute(); }
+  else if(b.dataset.pick!=null){ const i=+b.dataset.pick; pickIdx=pickIdx===i?null:i; renderMgr(); drawMap(R.P[cur]); if(pickIdx!=null) $("map").scrollIntoView({behavior:"smooth",block:"center"}); }});
+$("hhInp").addEventListener("change",e=>{cfg.hh=Math.max(0,parseFloat(e.target.value)||0); recompute();});
+$("addBtn").addEventListener("click",addInflow);
+$("addBtn2").addEventListener("click",addInflow);
+$("mgrBtn").addEventListener("click",()=>{const m=$("mgr"); m.open=true; m.scrollIntoView({behavior:"smooth",block:"start"});});
+$("togSeg").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; const k=b.dataset.t; cfg.on[k]=cfg.on[k]?0:1; recompute();});
+$("infSeg").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; const o=cfg.inflows[+b.dataset.i]; if(!o) return; o.on=!o.on; renderMgr(); recompute();});
+
+/* ===== 입력 표(상권·주민·프로그램) ===== */
 function renderInputs(){
   const inp=(g,i,k,v,type)=>`<input data-g="${g}" data-i="${i}" data-k="${k}" type="${type}" ${type==="number"?'min="0" step="any"':""} value="${v}">`;
   const row=(name,html,src,note="")=>`<tr><td>${name}</td><td>${html}</td><td><span class="src ${SRC[src][1]}">${SRC[src][0]}</span></td><td style="color:var(--muted)">${note}</td></tr>`;
   let h=`<tr><th>항목</th><th>값</th><th>근거</th><th>메모</th></tr>`;
-  h+=`<tr class="grp"><td colspan="4">상권 매력도</td></tr>`;
+  h+=`<tr class="grp"><td colspan="4">상권 매력도 S (판매면적 대용: 음식점·카페 점포 수)</td></tr>`;
   cfg.centers.forEach((c,i)=>h+=row(`${c.name} 점포 수`,inp("centers",i,"S",c.S,"number"),c.src,c.note));
-  h+=`<tr class="grp"><td colspan="4">기존 주민</td></tr>`;
+  h+=`<tr class="grp"><td colspan="4">기존 주민 (출발지 인구) · 유입 수요는 '유입 수요 관리'에서 편집</td></tr>`;
   cfg.origins.forEach((o,i)=>h+=row(`${o.name} 인구`,inp("origins",i,"pop",o.pop,"number"),o.src,o.note));
-  h+=`<tr class="grp"><td colspan="4">예정 수요</td></tr>`;
-  cfg.newOrigins.forEach((o,i)=>{h+=row(`${o.name} 인구`,inp("newOrigins",i,"pop",o.pop,"number"),o.src,o.note);h+=row(`${o.name} 유입 시점`,inp("newOrigins",i,"arrive",o.arrive,"month"),o.src,"");});
-  h+=`<tr class="grp"><td colspan="4">추진 일정 · 프로그램</td></tr>`;
-  const P={firstEdu:["1기 교육 시작","month","추진 일정"],cadence:["기수 간격(개월)","number","연 2기(3월·9월)"],teams:["기수당 팀 수","number","(안) · 원데이·마켓 단계 전원 참여"],
-    popupTeams:["팝업 진출 팀 수","number","지하도상가 팝업존, 3개월"],formalTeams:["정식 창업 팀 수","number","팝업 성과 기준 통과"],
-    survival:["1년 생존율","number","신생기업 64.1% (통계청, 2022 기준) · 2년 이후 미반영"],marketStart:["정기 마켓 개시","month","광장, 월 1회"],
-    marketDays:["월 마켓 일수","number","추진 일정: 월 1회"],boothsBase:["마켓 외부 부스(개시)","number",""],boothsExp:["마켓 외부 부스(확장 후)","number","담소 연계 플리마켓"],
-    expMonth:["플리마켓 확장 시점","month",""],ysqStores:["영스퀘어 상업시설(점포 환산)","number","플래그십 레스토랑 등"],ysqMonth:["영스퀘어 완공 월","month","연도 2028 확인됨, 월 가정"]};
-  for(const k in P) h+=row(P[k][0],inp("prog",0,k,cfg.prog[k],P[k][1]),cfg.progSrc[k],P[k][2]);
+  h+=`<tr class="grp"><td colspan="4">기수 운영</td></tr>`;
+  const P={firstEdu:["1기 교육 시작","month","교육 3개월 → 팝업 3개월 → 연계"],cadence:["새 기수 간격(개월)","number","3 = 앞 기수 팝업 시작월에 다음 기수 교육 시작"],
+    initN:["초기 기수 수","number","2028.5까지 4개 기수 40팀 과정 종료 목표"],cont:["초기 이후 기수 계속(1/0)","number","1 = 같은 간격으로 계속"],
+    teams:["기수당 교육 팀 수","number","(안)"],popupTeams:["기수당 팝업 팀 수","number","교육 수료팀 참여, 최대 10팀(안)"],
+    formalTeams:["기수당 정식 창업 연계 목표","number","(안) 업종별 손익·운영역량 검증 결과로 연계"],
+    delay:["정식 점포 입점 지연(개월)","number","0 = 연계 시작월에 바로 개업"],noOpen:["미개업률","number","0~1"],
+    survival:["1년 생존율","number","신생기업 64.1%(통계청, 2022 기준) · 개업 1년 후 1회 반영"],cap:["골목 점포 수용 상한(곳)","number","0 = 제한 없음 · 매입·협약 가능 공실 수로 교체"],
+    w1:["팝업 가중치 · 개시월","number","3개월 이벤트, 가운데 달 피크"],w2:["팝업 가중치 · 중간월","number",""],w3:["팝업 가중치 · 종료월","number",""],
+    popupDays:["팝업 월 운영일수","number",""],
+    marketStart:["플리마켓 개시","month","초기 팝업 집객 보조"],marketDays:["플리마켓 월 개최일수","number","매달 1주일"],
+    boothsBase:["외부 부스 수(초기)","number","팝업팀 부스는 중복 산입 안 함"],boothsExp:["외부 부스 수(지상 정기 마켓)","number",""],
+    expMonth:["지상 정기 플리마켓 전환월","month","상권 정착 이후"]};
+  for(const k in P){ if(k==="delay") h+=`<tr class="grp"><td colspan="4">정식 점포</td></tr>`; if(k==="w1") h+=`<tr class="grp"><td colspan="4">팝업 · 플리마켓</td></tr>`;
+    h+=row(P[k][0],inp("prog",0,k,cfg.prog[k],P[k][1]),cfg.progSrc[k]||"assume",P[k][2]); }
   h+=row("1인당 월 외식·카페 이용 횟수",inp("trips",0,"trips",cfg.trips,"number"),"assume","지수로 보면 결과에 영향 없음");
   $("inTbl").innerHTML=h;
 }
@@ -554,7 +748,8 @@ $("inTbl").addEventListener("change",e=>{const t=e.target;if(!t.dataset.g)return
   if(isM&&!/^\d{4}-\d{2}$/.test(v))return;
   if(g==="prog")cfg.prog[k]=v; else if(g==="trips")cfg.trips=v||1; else cfg[g][+t.dataset.i][k]=v;
   recompute();});
-$("resetBtn").addEventListener("click",()=>{cfg=structuredClone(DEFAULT);renderInputs();recompute();});
+$("resetBtn").addEventListener("click",resetAll);
+$("resetBtn2").addEventListener("click",resetAll);
 
 /* ===== 조작 ===== */
 $("jumpSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;stopPlay();cur=+b.dataset.m;render();});
@@ -568,13 +763,13 @@ function startPlay(present){
   if(cur>=N-1||present) cur=0; hold=present?6:0; render();
   $("playBtn").textContent="■ 자동 재생 멈춤"; $("stepPlay").textContent="■";
   timer=setInterval(()=>{ if(hold>0){hold--;return;} if(cur>=N-1){stopPlay();return;}
-    cur++; render(); if(present&&MILES.some(x=>x.m===cur)) hold=8; },present?230:160);
+    cur++; render(); if(present&&miles().some(x=>x.m===cur)) hold=8; },present?210:150);
 }
 $("playBtn").addEventListener("click",()=>startPlay(true));
 $("stepPlay").addEventListener("click",()=>startPlay(false));
 $("tiltBtn").addEventListener("click",()=>{const on=$("holder").classList.toggle("tilt");$("tiltBtn").setAttribute("aria-pressed",on);});
 
-renderInputs(); recompute();
+load(); renderInputs(); renderMgr(); recompute();
 </script>
 </body>
 </html>
